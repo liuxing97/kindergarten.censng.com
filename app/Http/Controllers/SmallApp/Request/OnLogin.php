@@ -23,8 +23,8 @@ class OnLogin
         $appCode = Input::get('code');
         $appKindergarten = Input::get('kindergarten');
         //kindergarten信息放入session中
-        $request->session()->push('kindergarten',$appKindergarten);
-        dump($appKindergarten);
+        $request->session()->put('kindergarten',$appKindergarten);
+//        dump($appKindergarten);
         //获取相对应的幼儿园配置
         $kindergartenObj = new Kindergarten();
         $kindergartenObj = $kindergartenObj -> where('kindergarten',$appKindergarten) -> first();
@@ -33,8 +33,8 @@ class OnLogin
             $appId = $kindergartenItem['appid'];
             $appSecret = $kindergartenItem['appsecret'];
             //放入session中
-            $request -> session() -> push('appid', $appId);
-            $request -> session() -> push('appsecret', $appSecret);
+            $request -> session() -> put('appid', $appId);
+            $request -> session() -> put('appsecret', $appSecret);
             //使用微信接口-登录凭证校验接口
             $url = 'https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code';
             $data = [
@@ -57,17 +57,27 @@ class OnLogin
             $result = file_get_contents($url, false, $context);
             //解析获取的openid与session_key
             $result = json_decode($result);
-            dump($result);
+//            dump($result);
             $userOpenid = $result ->openid;
-            $request -> session() -> push('openid',$userOpenid);
-            dump($userOpenid);
+            $request -> session() -> put('openid',$userOpenid);
+//            dump($userOpenid);
 //            echo "123";
             $session_key = $result ->session_key;
-            $request -> session() -> push('session_key',$session_key);
-            echo "用户已完成临时登录";
-            dump($session_key);
+            $request -> session() -> put('session_key',$session_key);
+            $data = $request->session()->all();
+//            dump($data);
+            return [
+                'msg' => '用户已完成临时登录',
+                'session' => $request -> session() -> get('_token'),
+                'time' => date('Y-m-d H:i:s')
+            ];
+//            dump($session_key);
         }else{
-            echo "幼儿园未查询到";
+            return [
+                'msg' => '幼儿园未查询到，所以无法进行临时登录',
+                'session' => $request -> session() -> get('_token'),
+                'time' => date('Y-m-d H:i:s')
+            ];
         }
     }
 
@@ -77,16 +87,21 @@ class OnLogin
     public function getIdentity(Request $request)
     {
         //得到微信用户openid及从哪个幼儿园小程序进来
-        $wechat = $request -> get('openid');
-        $appKindergarten = $request -> get('kindergarten');
+        $data = $request->session()->all();
+        dump($data);
+        $wechat = $request -> session()-> get('openid');
+        $appKindergarten = $request -> session() -> get('kindergarten');
         //查询控制表中是否存在记录
         $ctrlObj = new SmallappControl();
         $ctrlObj = $ctrlObj -> where('wechat',$wechat) -> where('kindergarten',$appKindergarten) -> first();
+        dump($wechat);
+        dump($appKindergarten);
+        dump($ctrlObj);
         if($ctrlObj){
             $ctrlData = $ctrlObj -> toArray();
             //缓存用户对象
-            $request -> session() -> push('identity','control');
-            $request -> session() -> push('userObj',$ctrlObj);
+            $request -> session() -> put('identity','control');
+            $request -> session() -> put('userObj',$ctrlObj);
             //组织返回数据
             $retData = [
                 'msg' => '用户存在',
@@ -103,8 +118,8 @@ class OnLogin
         if($adminObj){
             $adminData = $adminObj -> toArray();
             //缓存用户对象
-            $request -> session() -> push('identity',$adminData['type']);
-            $request -> session() -> push('userObj',$adminObj);
+            $request -> session() -> put('identity',$adminData['type']);
+            $request -> session() -> put('userObj',$adminObj);
             //组织返回数据
             $retData = [
                 'msg' => '用户存在',
@@ -123,8 +138,8 @@ class OnLogin
         if($babyObj){
             $babyData = $babyObj -> toArray();
             //缓存用户对象
-            $request -> session() -> push('identity',$babyData['type']);
-            $request -> session() -> push('userObj',$babyObj);
+            $request -> session() -> put('identity',$babyData['type']);
+            $request -> session() -> put('userObj',$babyObj);
             //组织返回数据
             $retData = [
                 'msg' => '用户存在',

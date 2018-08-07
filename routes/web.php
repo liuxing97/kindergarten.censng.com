@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'admin', 'as' => 'admin.'], 
 
 
 //小程序身份验证-返回使用身份以便小程序显示对应功能
+Route::post('/user/getSession',['uses' => 'SmallApp\Request\Session@getSession']);
 Route::get('/user/getUserInfo', ['uses' => 'SmallApp\Request\GetUserInfo@getIdentityType']);
 Route::post('/user/onLogin', ['uses' => 'SmallApp\Request\OnLogin@login']);
 Route::post('/user/getIdentity',['uses' => 'SmallApp\Request\OnLogin@getIdentity']);

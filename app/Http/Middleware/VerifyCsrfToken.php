@@ -15,6 +15,7 @@ class VerifyCsrfToken extends BaseVerifier
         '/signup/new_archive',
         '/user/getUserInfo',
         '/user/onLogin',
-        '/user/getIdentity'
+        '/user/getIdentity',
+        '/user/getSession'
     ];
 }

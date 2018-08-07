@@ -52,15 +52,15 @@ class OnLogin
             $result = file_get_contents($url, false, $context);
             //解析获取的openid与session_key
             $result = json_decode($result);
-//            dump($result);
+            dump($result);
             $userOpenid = $result ->openid;
             $request -> session() -> push('openid',$userOpenid);
-//            dump($userOpenid);
+            dump($userOpenid);
 //            echo "123";
             $session_key = $result ->session_key;
             $request -> session() -> push('session_key',$session_key);
             echo "用户已完成临时登录";
-//            dump($session_key);
+            dump($session_key);
         }else{
             echo "幼儿园未查询到";
         }

@@ -19,7 +19,7 @@ class OnLogin
     {
         $appCode = Input::get('code');
         $appKindergarten = Input::get('kindergarten');
-        dump($appKindergarten);
+//        dump($appKindergarten);
         //获取相对应的幼儿园配置
         $kindergartenObj = new Kindergarten();
         $kindergartenObj = $kindergartenObj -> where('kindergarten',$appKindergarten) -> first();

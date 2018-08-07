@@ -24,5 +24,44 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'admin', 'as' => 'admin.'], 
     Route::post('roles_mass_destroy', ['uses' => 'Admin\RolesController@massDestroy', 'as' => 'roles.mass_destroy']);
     Route::resource('users', 'Admin\UsersController');
     Route::post('users_mass_destroy', ['uses' => 'Admin\UsersController@massDestroy', 'as' => 'users.mass_destroy']);
+});
+
+
+//小程序身份验证-返回使用身份以便小程序显示对应功能
+Route::post('/user/getUserInfo', ['uses' => 'Request\GetUserInfo@getIdentityType']);
+
+//小程序交互部分-报名
+Route::group(['prefix' => 'signup', 'namespace' => 'SmallApp'], function () {
+//    Route::get('new_archive', ['uses' => 'Request\SignUp@newArchive']);
+    Route::post('new_archive', function ()
+    {
+        $post = \Illuminate\Support\Facades\Input::get('encryptedData');
+        dump($post);
+    });
+});
+
+//小程序交互部分-相册
+Route::group(['prefix' => 'signup'], function () {
+
+});
+
+//小程序交互部分-资料
+Route::group(['prefix' => 'signup'], function () {
+
+});
+
+//小程序交互部分-儿歌
+Route::group(['prefix' => 'signup'], function () {
+
+});
+
+//小程序交互部分-故事
+Route::group(['prefix' => 'signup'], function () {
+//    wx22fb4ce531885f1e
+//    316369f79f2a76476abc50cf52cd6303
+});
+
+//小程序交互部分-识字
+Route::group(['prefix' => 'signup'], function () {
 
 });

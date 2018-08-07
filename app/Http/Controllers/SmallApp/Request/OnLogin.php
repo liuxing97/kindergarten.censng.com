@@ -52,11 +52,11 @@ class OnLogin
             $result = file_get_contents($url, false, $context);
             $result = json_decode($result);
             dump($result);
-//            $userOpenid = $result['openid'];
-//            dump($userOpenid);
-//            echo "123";
-//            $session_key = $result['session_key'];
-//            dump($session_key);
+            $userOpenid = $result ->openid;
+            dump($userOpenid);
+            echo "123";
+            $session_key = $result ->session_key;
+            dump($session_key);
         }else{
             echo "幼儿园未查询到";
         }

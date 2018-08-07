@@ -12,6 +12,7 @@ namespace App\Http\Controllers\SmallApp\Request;
 use App\Baby;
 use App\Kindergarten;
 use App\SmallappAdmin;
+use App\SmallappControl;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
@@ -73,12 +74,32 @@ class OnLogin
     /**
      * 已登录的情况下，才会调用本方法，返回json 用户信息对象及用户类型，
      */
-    public function getIdentity(Request $request){
-        //查询管理表是否存在记录
+    public function getIdentity(Request $request)
+    {
+        //得到微信用户openid及从哪个幼儿园小程序进来
         $wechat = $request -> get('openid');
-        $adminObj = new SmallappAdmin();
-        $adminObj = $adminObj -> where('wechat',$wechat) -> first();
+        $appKindergarten = $request -> get('kindergarten');
+        //查询控制表中是否存在记录
+        $ctrlObj = new SmallappControl();
+        $ctrlObj = $ctrlObj -> where('wechat',$wechat) -> where('kindergarten',$appKindergarten) -> first();
+        if($ctrlObj){
+            $ctrlData = $ctrlObj -> toArray();
+            //缓存用户对象
+            $request -> session() -> push('identity','control');
+            $request -> session() -> push('userObj',$ctrlObj);
+            //组织返回数据
+            $retData = [
+                'msg' => '用户存在',
+                'type' => 'control',
+                'userInfo' => $ctrlData,
+                'time' => date('Y-m-d H:i:s')
+            ];
+            return $retData;
+        }
 
+        //查询管理表是否存在记录
+        $adminObj = new SmallappAdmin();
+        $adminObj = $adminObj -> where('wechat',$wechat) -> where('kindergarten',$appKindergarten) -> first();
         if($adminObj){
             $adminData = $adminObj -> toArray();
             //缓存用户对象
@@ -97,7 +118,7 @@ class OnLogin
 
         //查询普通用户表是否存在记录
         $babyObj = new Baby();
-        $babyObj = $babyObj -> where('wechat',$wechat) -> first();
+        $babyObj = $babyObj -> where('wechat',$wechat) -> where('kindergarten',$appKindergarten) -> first();
         //如果存在
         if($babyObj){
             $babyData = $babyObj -> toArray();

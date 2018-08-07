@@ -23,7 +23,8 @@ class OnLogin
         $kindergartenObj = new Kindergarten();
         $kindergartenObj = $kindergartenObj -> where('kindergarten',$appKindergarten) -> first();
         if($kindergartenObj){
-            dump($kindergartenObj);
+            $kindergartenItem = $kindergartenObj -> toArray();
+            dump($kindergartenItem);
         }else{
             echo "幼儿园未查询到";
         }

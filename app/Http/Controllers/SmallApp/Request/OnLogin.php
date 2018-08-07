@@ -53,6 +53,7 @@ class OnLogin
             $result = json_decode($result);
             $userOpenid = $result['openid'];
             dump($userOpenid);
+            echo "123";
             $session_key = $result['session_key'];
             dump($session_key);
         }else{

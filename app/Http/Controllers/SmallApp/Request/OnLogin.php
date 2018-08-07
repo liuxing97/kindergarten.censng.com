@@ -9,7 +9,14 @@
 namespace App\Http\Controllers\SmallApp\Request;
 
 
+use Illuminate\Support\Facades\Input;
+
 class OnLogin
 {
-
+    public function login()
+    {
+        $appCode = Input::get('code');
+        $appKindergarten = Input::get('kindergarten');
+        dump($appKindergarten);
+    }
 }

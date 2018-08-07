@@ -10,11 +10,12 @@ namespace App\Http\Controllers\SmallApp\Request;
 
 
 use App\Kindergarten;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
 class OnLogin
 {
-    public function login()
+    public function login(Request $request)
     {
         $appCode = Input::get('code');
         $appKindergarten = Input::get('kindergarten');
@@ -24,7 +25,33 @@ class OnLogin
         $kindergartenObj = $kindergartenObj -> where('kindergarten',$appKindergarten) -> first();
         if($kindergartenObj){
             $kindergartenItem = $kindergartenObj -> toArray();
-            dump($kindergartenItem);
+            $appId = $kindergartenItem['appid'];
+            $appSecret = $kindergartenItem['appsecret'];
+            //放入session中
+            $request -> session() -> push('appid', $appId);
+            $request -> session() -> push('appsecret', $appSecret);
+            //使用微信接口-登录凭证校验接口
+            $url = 'https://api.weixin.qq.com/sns/jscode2session?appid=APPID&secret=SECRET&js_code=JSCODE&grant_type=authorization_code';
+            $data = [
+                'appid'=> $appId,
+                'secret' => $appSecret,
+                'js_code' => $appCode,
+                'grant_type' => 'authorization_code'
+            ];
+            $postdata = http_build_query(
+                $data
+            );
+            $opts = array('http' =>
+                array(
+                    'method' => 'POST',
+                    'header' => 'Content-type: application/x-www-form-urlencoded',
+                    'content' => $postdata
+                )
+            );
+            $context = stream_context_create($opts);
+            $result = file_get_contents($url, false, $context);
+            dump($result);
+
         }else{
             echo "幼儿园未查询到";
         }

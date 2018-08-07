@@ -85,14 +85,13 @@ class OnLogin
             $request -> session() -> push('identity',$adminData['type']);
             $request -> session() -> push('userObj',$adminObj);
             //组织返回数据
-            $retData = json_encode([
+            $retData = [
                 'msg' => '用户存在',
                 'type' => $adminData['type'],
                 'userInfo' => $adminData,
                 'time' => date('Y-m-d H:i:s')
-            ]);
-            echo $retData;
-            return true;
+            ];
+            return $retData;
         }
 
 
@@ -106,17 +105,22 @@ class OnLogin
             $request -> session() -> push('identity',$babyData['type']);
             $request -> session() -> push('userObj',$babyObj);
             //组织返回数据
-            $retData = json_encode([
+            $retData = [
                 'msg' => '用户存在',
                 'type' => $babyData['type'],
                 'userInfo' => $babyData,
                 'time' => date('Y-m-d H:i:s')
-            ]);
-            echo $retData;
-            return true;
+            ];
+            return $retData;
         }
 
-        echo "无用户记录";
-        return '无用户记录ret';
+
+        $retData = [
+            'msg' => '用户不存在',
+            'type' => 'tourist',
+            'userInfo' => '',
+            'time' => date('Y-m-d H:i:s')
+        ];
+        return $retData;
     }
 }

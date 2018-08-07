@@ -24,7 +24,7 @@ class OnLogin
         $appKindergarten = Input::get('kindergarten');
         //kindergarten信息放入session中
         $request->session()->push('kindergarten',$appKindergarten);
-//        dump($appKindergarten);
+        dump($appKindergarten);
         //获取相对应的幼儿园配置
         $kindergartenObj = new Kindergarten();
         $kindergartenObj = $kindergartenObj -> where('kindergarten',$appKindergarten) -> first();

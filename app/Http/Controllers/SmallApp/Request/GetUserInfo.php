@@ -12,6 +12,7 @@ namespace App\Http\Controllers\SmallApp\Request;
 class GetUserInfo
 {
     function getIdentityType(){
-
+        $post = \Illuminate\Support\Facades\Input::get('encryptedData');
+        dump($post);
     }
 }

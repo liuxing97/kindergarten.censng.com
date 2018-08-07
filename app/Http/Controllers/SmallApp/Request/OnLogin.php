@@ -9,7 +9,9 @@
 namespace App\Http\Controllers\SmallApp\Request;
 
 
+use App\Baby;
 use App\Kindergarten;
+use App\SmallappAdmin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Input;
 
@@ -19,6 +21,8 @@ class OnLogin
     {
         $appCode = Input::get('code');
         $appKindergarten = Input::get('kindergarten');
+        //kindergarten信息放入session中
+        $request->session()->push('kindergarten',$appKindergarten);
 //        dump($appKindergarten);
         //获取相对应的幼儿园配置
         $kindergartenObj = new Kindergarten();
@@ -64,5 +68,55 @@ class OnLogin
         }else{
             echo "幼儿园未查询到";
         }
+    }
+
+    /**
+     * 已登录的情况下，才会调用本方法，返回json 用户信息对象及用户类型，
+     */
+    public function getIdentity(Request $request){
+        //查询管理表是否存在记录
+        $wechat = $request -> get('openid');
+        $adminObj = new SmallappAdmin();
+        $adminObj = $adminObj -> where('wechat',$wechat) -> first();
+
+        if($adminObj){
+            $adminData = $adminObj -> toArray();
+            //缓存用户对象
+            $request -> session() -> push('identity',$adminData['type']);
+            $request -> session() -> push('userObj',$adminObj);
+            //组织返回数据
+            $retData = json_encode([
+                'msg' => '用户存在',
+                'type' => $adminData['type'],
+                'userInfo' => $adminData,
+                'time' => date('Y-m-d H:i:s')
+            ]);
+            echo $retData;
+            return true;
+        }
+
+
+        //查询普通用户表是否存在记录
+        $babyObj = new Baby();
+        $babyObj = $babyObj -> where('wechat',$wechat) -> first();
+        //如果存在
+        if($babyObj){
+            $babyData = $babyObj -> toArray();
+            //缓存用户对象
+            $request -> session() -> push('identity',$babyData['type']);
+            $request -> session() -> push('userObj',$babyObj);
+            //组织返回数据
+            $retData = json_encode([
+                'msg' => '用户存在',
+                'type' => $babyData['type'],
+                'userInfo' => $babyData,
+                'time' => date('Y-m-d H:i:s')
+            ]);
+            echo $retData;
+            return true;
+        }
+
+        echo "无用户记录";
+        return false;
     }
 }

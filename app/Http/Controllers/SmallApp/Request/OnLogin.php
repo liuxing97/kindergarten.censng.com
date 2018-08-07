@@ -117,6 +117,6 @@ class OnLogin
         }
 
         echo "无用户记录";
-        return false;
+        return '无用户记录ret';
     }
 }

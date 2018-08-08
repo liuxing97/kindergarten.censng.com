@@ -1,4 +1,5 @@
 <?php
+
 Route::get('/', function () { return redirect('/admin/home'); });
 
 // Authentication Routes...
@@ -29,9 +30,12 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'admin', 'as' => 'admin.'], 
 
 //小程序身份验证-返回使用身份以便小程序显示对应功能
 Route::post('/user/getSession',['uses' => 'SmallApp\Request\Session@getSession']);
-Route::get('/user/getUserInfo', ['uses' => 'SmallApp\Request\GetUserInfo@getIdentityType']);
+Route::get('/user/getUserInfo', ['uses' => 'SmallApp\Request\GetUserInfo@getIdentity']);
 Route::post('/user/onLogin', ['uses' => 'SmallApp\Request\OnLogin@login']);
-Route::post('/user/getIdentity',['uses' => 'SmallApp\Request\OnLogin@getIdentity']);
+Route::post('/user/getIdentity',['uses' => 'SmallApp\Request\GetUserInfo@getIdentity']);
+Route::post('/user/center/createNewLeader',['uses' => 'SmallApp\Request\CreateNewLeader@create']);
+
+
 //小程序交互部分-报名
 Route::group(['prefix' => 'signup', 'namespace' => 'SmallApp'], function () {
 //    Route::get('new_archive', ['uses' => 'Request\SignUp@newArchive']);

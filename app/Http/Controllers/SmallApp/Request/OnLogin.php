@@ -73,14 +73,14 @@ class OnLogin
             $data = $request->session()->all();
 //            dump($data);
             return [
-                'msg' => '用户已完成临时登录',
+                'msg' => 'temp login success',
                 'session' => $request -> session() -> get('_token'),
                 'time' => date('Y-m-d H:i:s')
             ];
 //            dump($session_key);
         }else{
             return [
-                'msg' => '幼儿园未查询到，所以无法进行临时登录',
+                'msg' => 'temp login success fail',
                 'session' => $request -> session() -> get('_token'),
                 'time' => date('Y-m-d H:i:s')
             ];

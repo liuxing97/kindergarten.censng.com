@@ -9,6 +9,9 @@
 namespace App\Http\Controllers\SmallApp\Request;
 
 
+use App\Baby;
+use App\SmallappAdmin;
+use App\SmallappControl;
 use Illuminate\Http\Request;
 
 class GetUserInfo
@@ -24,6 +27,7 @@ class GetUserInfo
 //        dump($data);
         $wechat = $request -> session()-> get('openid');
         $appKindergarten = $request -> session() -> get('kindergarten');
+//        dump($wechat);
         //查询控制表中是否存在记录
         $ctrlObj = new SmallappControl();
         $ctrlObj = $ctrlObj -> where('wechat',$wechat) -> where('kindergarten',$appKindergarten) -> first();
@@ -37,7 +41,7 @@ class GetUserInfo
             $request -> session() -> put('userObj',$ctrlObj);
             //组织返回数据
             $retData = [
-                'msg' => '用户存在',
+                'msg' => 'user found',
                 'type' => 'control',
                 'userInfo' => $ctrlData,
                 'time' => date('Y-m-d H:i:s')
@@ -55,7 +59,7 @@ class GetUserInfo
             $request -> session() -> put('userObj',$adminObj);
             //组织返回数据
             $retData = [
-                'msg' => '用户存在',
+                'msg' => 'user found',
                 'type' => $adminData['type'],
                 'userInfo' => $adminData,
                 'time' => date('Y-m-d H:i:s')
@@ -75,7 +79,7 @@ class GetUserInfo
             $request -> session() -> put('userObj',$babyObj);
             //组织返回数据
             $retData = [
-                'msg' => '用户存在',
+                'msg' => 'user found',
                 'type' => $babyData['type'],
                 'userInfo' => $babyData,
                 'time' => date('Y-m-d H:i:s')
@@ -85,7 +89,7 @@ class GetUserInfo
 
 
         $retData = [
-            'msg' => '用户不存在',
+            'msg' => 'user not found',
             'type' => 'tourist',
             'userInfo' => '',
             'time' => date('Y-m-d H:i:s')

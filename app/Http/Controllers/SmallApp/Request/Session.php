@@ -15,9 +15,10 @@ use Illuminate\Http\Request;
 class Session
 {
     function getSession(Request $request){
+
         $token = $request -> session() -> get('_token');
         return [
-            'msg' => '您可以从header中获取sessionid',
+            'msg' => 'you can get sessionid on header',
             'time' => date('Y-m-d H:i:s')
         ];
     }

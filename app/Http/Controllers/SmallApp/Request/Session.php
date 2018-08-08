@@ -17,8 +17,7 @@ class Session
     function getSession(Request $request){
         $token = $request -> session() -> get('_token');
         return [
-            'msg' => '您的token已返回',
-            'token' => $token,
+            'msg' => '您可以从header中获取sessionid',
             'time' => date('Y-m-d H:i:s')
         ];
     }

@@ -40,7 +40,7 @@ Route::post('/user/center/createNewLeader/applyBind',['uses' => 'SmallApp\Reques
 //新建园长权限页面的小程序处理逻辑-------绑定幼儿园小程序与微信账户-----得到待处理列表
 Route::post('/user/center/createNewLeader/getWaitingList',['uses' => 'SmallApp\Request\CreateNewLeader@getWaitingList']);
 //新建园长权限页面的小程序处理逻辑-------绑定幼儿园小程序与微信账户-----处理操作
-Route::post('/user/center/createNewLeader/handle',['uses' => 'SmallApp\Request\CreateNewLeader@bindWechatHandle']);
+Route::post('/user/center/createNewLeader/handle',['uses' => 'SmallApp\Request\CreateNewLeader@handle']);
 
 
 

@@ -90,7 +90,38 @@ class CreateNewLeader extends Controller
         $appid = $request -> session() -> get('appid');
         //查询
         $applyListObj = new ControlAuthorityApply();
-        $applyListObj = $applyListObj -> where('kindergarten',$appid) -> all();
-        dump($applyListObj);
+        $applyListObj = $applyListObj -> where('kindergarten',$appid) ->get();
+        if($applyListObj){
+            $applyListObj = $applyListObj -> toArray();
+        }
+        return $applyListObj;
+    }
+
+    //处理小程序待审核列表中的数据
+    public function handle(Request $request){
+        //得到要处理的数据序号
+        $dataId = $request -> get('dataId');
+        //得到要处理的数据动作
+        $dataAction = $request -> get('dataAction');
+        if($dataAction != 'true' and $dataAction != 'false'){
+            return 'handle error';
+        }
+        //获取数据
+        $dataObj = new ControlAuthorityApply();
+        $dataObj = $dataObj -> find($dataId);
+        $dataObj -> action = $dataAction;
+        $res = $dataObj -> save();
+        if($res){
+            $data = [
+                'msg' => 'action: '.$dataAction.' ,success',
+                'time' => date('Y-m-d H:i:s')
+            ];
+        }else{
+            $data = [
+                'msg' => 'action: '.$dataAction.' ,fail',
+                'time' => date('Y-m-d H:i:s')
+            ];
+        }
+        return $data;
     }
 }

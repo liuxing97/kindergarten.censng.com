@@ -18,7 +18,7 @@ class CreatQRCode extends Controller
         $url = "https://api.weixin.qq.com/wxa/getwxacode?access_token=".$ACCESS_TOKEN;
 //        dump($url);
         //调用环境配置
-        $post_data='{"path":"/pages/index/index","width":"234"}';
+        $post_data='{"path":"/controls/newLeaderUser/newLeaderUser","width":"800"}';
 //        $data = json_encode($data);
 //        dump($data);
 //        $query = http_build_query($data);

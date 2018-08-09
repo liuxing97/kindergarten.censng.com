@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\SmallApp\Request;
 
+use App\ControlAuthorityApply;
 use App\Http\Controllers\SmallApp\Common\AccessToken;
 use App\Http\Controllers\SmallApp\Common\CreatQRCode;
 use Illuminate\Http\Request;
@@ -16,7 +17,7 @@ class CreateNewLeader extends Controller
         //判断是否已存在当前小程序用来打开创建园长账户的二维码
         $filePath = "./../public/QRCode/newLeader/".md5($appid).".jpg";
         //预先得到src地址
-        $src = "https://".$_SERVER['SERVER_NAME']."/qrQRCode/newLeader/".md5($appid).".jpg";
+        $src = "https://".$_SERVER['SERVER_NAME']."/QRCode/newLeader/".md5($appid).".jpg";
         if(file_exists($filePath)){
             //返回图片地址
             $data = [
@@ -44,5 +45,18 @@ class CreateNewLeader extends Controller
             }
         }
         return $data;
+    }
+
+
+    public function bindWechat(Request $request){
+        $appid = $request -> session() -> get('appid');
+        $wechat = $request -> session() -> get('openid');
+        $applytype = 'leader';
+        $tableObj = new ControlAuthorityApply();
+        $tableObj -> kindergarten = $appid;
+        $tableObj -> applytype = $applytype;
+        $tableObj -> wechat = $wechat;
+        $ret = $tableObj -> save();
+        return $ret;
     }
 }

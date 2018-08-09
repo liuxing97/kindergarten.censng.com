@@ -28,13 +28,18 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'admin', 'as' => 'admin.'], 
 });
 
 
-//小程序身份验证-返回使用身份以便小程序显示对应功能
 Route::post('/user/getSession',['uses' => 'SmallApp\Request\Session@getSession']);
 Route::get('/user/getUserInfo', ['uses' => 'SmallApp\Request\GetUserInfo@getIdentity']);
 Route::post('/user/onLogin', ['uses' => 'SmallApp\Request\OnLogin@login']);
 Route::post('/user/getIdentity',['uses' => 'SmallApp\Request\GetUserInfo@getIdentity']);
+
+//得到新建园长权限页面的小程序二维码
 Route::post('/user/center/createNewLeader/getQRCode',['uses' => 'SmallApp\Request\CreateNewLeader@getQRCode']);
-Route::post('/user/center/createNewLeader',['uses' => 'SmallApp\Request\CreateNewLeader@create']);
+//新建园长权限页面的小程序处理逻辑-------绑定幼儿园小程序与微信账户-----申请操作
+Route::post('/user/center/createNewLeader/applyBind',['uses' => 'SmallApp\Request\CreateNewLeader@bindWechatApply']);
+//新建园长权限页面的小程序处理逻辑-------绑定幼儿园小程序与微信账户-----处理操作
+Route::post('/user/center/createNewLeader/handle',['uses' => 'SmallApp\Request\CreateNewLeader@bindWechatHandle']);
+
 
 
 //小程序交互部分-报名

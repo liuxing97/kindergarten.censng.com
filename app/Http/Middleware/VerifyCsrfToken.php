@@ -17,6 +17,8 @@ class VerifyCsrfToken extends BaseVerifier
         '/user/onLogin',
         '/user/getIdentity',
         '/user/getSession',
-        '/user/center/createNewLeader/getQRCode'
+        '/user/center/createNewLeader/getQRCode',
+        '/user/center/createNewLeader/applyBind',
+        '/user/center/createNewLeader/handle'
     ];
 }

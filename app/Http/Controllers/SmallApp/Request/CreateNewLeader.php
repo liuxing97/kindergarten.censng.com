@@ -16,16 +16,19 @@ class CreateNewLeader extends Controller
         $appid = $request -> session() -> get('appid');
         //判断是否已存在当前小程序用来打开创建园长账户的二维码
         $filePath = "./../public/QRCode/newLeader/".md5($appid).".jpg";
+//        dump($filePath);
         //预先得到src地址
         $src = "https://".$_SERVER['SERVER_NAME']."/QRCode/newLeader/".md5($appid).".jpg";
+//        dump($src);
         if(file_exists($filePath)){
+//            dump('has');
             //返回图片地址
             $data = [
                 'msg' => 'return QRCode success',
                 'src' => $src,
                 'time' => date('Y-m-d H:i:s')
             ];
-        }else{
+        }else {
             //调用创建二维码
             $creatQRCodeObj = new CreatQRCode();
             $ret = $creatQRCodeObj -> newLeaderQRCode($request);
@@ -48,15 +51,46 @@ class CreateNewLeader extends Controller
     }
 
 
-    public function bindWechat(Request $request){
+    public function bindWechatApply(Request $request){
+//        dump($request ->session() ->all());
         $appid = $request -> session() -> get('appid');
         $wechat = $request -> session() -> get('openid');
+        //判断是否已经存在过未处理的申请。
+        $isApplyObj = new ControlAuthorityApply();
+        $isApplyObj = $isApplyObj -> where('wechat',$wechat) -> where('action',NULL) -> first();
+        if($isApplyObj){
+            $data = [
+                'msg' => 'has apply',
+                'time' => date('Y-m-d H:i:s'),
+            ];
+            return $data;
+        }
         $applytype = 'leader';
         $tableObj = new ControlAuthorityApply();
         $tableObj -> kindergarten = $appid;
         $tableObj -> applytype = $applytype;
         $tableObj -> wechat = $wechat;
         $ret = $tableObj -> save();
-        return $ret;
+        if($ret){
+            $data = [
+                'msg' => 'apply success',
+                'time' => date('Y-m-d H:i:s'),
+            ];
+        }else{
+            $data = [
+                'msg' => 'apply fail',
+                'time' => date('Y-m-d H:i:s'),
+            ];
+        }
+        return $data;
+    }
+
+    //得到所有本小程序待审核列表-园长申请权限列表
+    public function getWaitingList(Request $request){
+        $appid = $request -> session() -> get('appid');
+        //查询
+        $applyListObj = new ControlAuthorityApply();
+        $applyListObj = $applyListObj -> where('kindergarten',$appid) -> all();
+        dump($applyListObj);
     }
 }

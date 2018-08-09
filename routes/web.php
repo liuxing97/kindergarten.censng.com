@@ -33,6 +33,7 @@ Route::post('/user/getSession',['uses' => 'SmallApp\Request\Session@getSession']
 Route::get('/user/getUserInfo', ['uses' => 'SmallApp\Request\GetUserInfo@getIdentity']);
 Route::post('/user/onLogin', ['uses' => 'SmallApp\Request\OnLogin@login']);
 Route::post('/user/getIdentity',['uses' => 'SmallApp\Request\GetUserInfo@getIdentity']);
+Route::post('/user/center/createNewLeader/getQRCode',['uses' => 'SmallApp\Request\CreateNewLeader@getQRCode']);
 Route::post('/user/center/createNewLeader',['uses' => 'SmallApp\Request\CreateNewLeader@create']);
 
 

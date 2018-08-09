@@ -27,7 +27,7 @@ class CreateNewLeader extends Controller
         }else{
             //调用创建二维码
             $creatQRCodeObj = new CreatQRCode();
-            $ret = $creatQRCodeObj -> newLeaderQRCode();
+            $ret = $creatQRCodeObj -> newLeaderQRCode($request);
             if($ret){
                 //返回图片地址
                 $data = [

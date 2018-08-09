@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 
 class CreatQRCode extends Controller
 {
-    function newLeaderQRCode(){
+    function newLeaderQRCode(Request $request){
         //得到appid
         $appid = $request -> session() -> get('appid');
         //得到access_token

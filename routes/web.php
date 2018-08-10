@@ -46,7 +46,7 @@ Route::post('/user/center/createNewLeader/handle',['uses' => 'SmallApp\Request\C
 
 
 //园长-发布通知
-Route::post("/user/leader/newNotice",['uses' => 'SmallApp\Request\KindergartenNewNotice@newNotice']);
+Route::post("/user/leader/newNotice",['uses' => 'SmallApp\Request\KindergartenCreateNotice@newNotice']);
 
 
 

@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Input;
 use Illuminate\Validation\Rules\In;
 
-class KindergartenNewNotice extends Controller
+class KindergartenCreateNotice extends Controller
 {
     //
     function newNotice(Request $request){

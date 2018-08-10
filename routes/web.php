@@ -28,6 +28,7 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'admin', 'as' => 'admin.'], 
 });
 
 
+//小程序所有用户的初始动作
 Route::post('/user/getSession',['uses' => 'SmallApp\Request\Session@getSession']);
 Route::get('/user/getUserInfo', ['uses' => 'SmallApp\Request\GetUserInfo@getIdentity']);
 Route::post('/user/onLogin', ['uses' => 'SmallApp\Request\OnLogin@login']);
@@ -41,6 +42,13 @@ Route::post('/user/center/createNewLeader/applyBind',['uses' => 'SmallApp\Reques
 Route::post('/user/center/createNewLeader/getWaitingList',['uses' => 'SmallApp\Request\CreateNewLeader@getWaitingList']);
 //新建园长权限页面的小程序处理逻辑-------绑定幼儿园小程序与微信账户-----处理操作
 Route::post('/user/center/createNewLeader/handle',['uses' => 'SmallApp\Request\CreateNewLeader@handle']);
+
+
+
+//园长-发布通知
+Route::post("/user/leader/newNotice",['uses' => 'SmallApp\Request\KindergartenNewNotice@newNotice']);
+
+
 
 
 

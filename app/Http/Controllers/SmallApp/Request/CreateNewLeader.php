@@ -5,8 +5,11 @@ namespace App\Http\Controllers\SmallApp\Request;
 use App\ControlAuthorityApply;
 use App\Http\Controllers\SmallApp\Common\AccessToken;
 use App\Http\Controllers\SmallApp\Common\CreatQRCode;
+use App\SmallappAdmin;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Input;
+use Illuminate\Validation\Rules\In;
 
 class CreateNewLeader extends Controller
 {
@@ -55,9 +58,9 @@ class CreateNewLeader extends Controller
 //        dump($request ->session() ->all());
         $appid = $request -> session() -> get('appid');
         $wechat = $request -> session() -> get('openid');
-        //判断是否已经存在过未处理的申请。
+        //判断是否已经存在过未处理的申请，或已成功的申请。
         $isApplyObj = new ControlAuthorityApply();
-        $isApplyObj = $isApplyObj -> where('wechat',$wechat) -> where('action',NULL) -> first();
+        $isApplyObj = $isApplyObj -> where('wechat',$wechat) -> where('action',NULL) -> orWhere('action','true') -> first();
         if($isApplyObj){
             $data = [
                 'msg' => 'has apply',
@@ -90,7 +93,7 @@ class CreateNewLeader extends Controller
         $appid = $request -> session() -> get('appid');
         //查询
         $applyListObj = new ControlAuthorityApply();
-        $applyListObj = $applyListObj -> where('kindergarten',$appid) ->get();
+        $applyListObj = $applyListObj -> where('kindergarten',$appid) -> where('action',NULL) ->get();
         if($applyListObj){
             $applyListObj = $applyListObj -> toArray();
         }
@@ -100,22 +103,44 @@ class CreateNewLeader extends Controller
     //处理小程序待审核列表中的数据
     public function handle(Request $request){
         //得到要处理的数据序号
-        $dataId = $request -> get('dataId');
+        $dataId = Input::get('dataId');
         //得到要处理的数据动作
-        $dataAction = $request -> get('dataAction');
+        $dataAction = Input :: get('dataAction');
         if($dataAction != 'true' and $dataAction != 'false'){
+//            dump($dataAction);
+//            dump(Input::all());
             return 'handle error';
         }
         //获取数据
         $dataObj = new ControlAuthorityApply();
-        $dataObj = $dataObj -> find($dataId);
+//        $dataObj = $dataObj -> find($dataId);
+        $dataObj = $dataObj -> where('id',$dataId) -> where('action',NULL) -> first();
         $dataObj -> action = $dataAction;
         $res = $dataObj -> save();
+        $wechat = $dataObj -> wechat;
         if($res){
-            $data = [
-                'msg' => 'action: '.$dataAction.' ,success',
-                'time' => date('Y-m-d H:i:s')
-            ];
+            //如果是要通过
+            if($dataAction == 'true'){
+                //创建账户
+                $res = $this -> creatUser($request,$wechat);
+                if($res){
+                    $data = [
+                        'msg' => 'action: '.$dataAction.' ,success',
+                        'time' => date('Y-m-d H:i:s')
+                    ];
+                }else{
+                    $data = [
+                        'msg' => 'action: '.$dataAction.' ,success,but create user fail',
+                        'time' => date('Y-m-d H:i:s')
+                    ];
+                }
+            }else{
+                $data = [
+                    'msg' => 'action: '.$dataAction.' ,success',
+                    'time' => date('Y-m-d H:i:s')
+                ];
+            }
+
         }else{
             $data = [
                 'msg' => 'action: '.$dataAction.' ,fail',
@@ -124,4 +149,21 @@ class CreateNewLeader extends Controller
         }
         return $data;
     }
+
+    //处理小程序待审核列表中的数据-创建新的园长用户到数据库
+    public function creatUser(Request $request,$wechat){
+        $tableObj = new SmallappAdmin();
+        $kindergarten = $request -> session() -> get('kindergarten');
+        $type = 'leader';
+        $tableObj -> kindergarten = $kindergarten;
+        $tableObj -> wechat = $wechat;
+        $tableObj -> type = $type;
+        $res = $tableObj -> save();
+        if($res){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 }

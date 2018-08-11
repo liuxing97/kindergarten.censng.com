@@ -53,6 +53,12 @@ Route::post("/user/leader/newClassType",['uses' => 'SmallApp\Request\Kindergarte
 
 
 
+//公用接口
+Route::post("/smallapp/common/getClassType", ['uses' => 'SmallApp\Request\CommonGetClassType@get']);
+
+
+
+
 
 //小程序交互部分-报名
 Route::group(['prefix' => 'signup', 'namespace' => 'SmallApp'], function () {

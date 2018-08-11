@@ -46,10 +46,11 @@ Route::post('/user/center/createNewLeader/handle',['uses' => 'SmallApp\Request\C
 
 
 //园长-发布通知
-Route::post("/user/leader/newNotice",['uses' => 'SmallApp\Request\KindergartenCreateNotice@newNotice']);
+Route::post("/user/leader/newNotice", ['uses' => 'SmallApp\Request\KindergartenCreateNotice@newNotice']);
 //园长-创建班级类型
-Route::post("/user/leader/newClassType",['uses' => 'SmallApp\Request\KindergartenCreateClassType@newType']);
-
+Route::post("/user/leader/newClassType", ['uses' => 'SmallApp\Request\KindergartenCreateClassType@newType']);
+//园长-创建班级
+Route::post("/user/leader/newClass", ['uses' => 'SmallApp\Request\KindergartenCreateClass@createClass']);
 
 
 

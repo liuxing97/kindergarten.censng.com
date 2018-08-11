@@ -14,9 +14,11 @@ class CommonGetClassType extends Controller
     public function get(Request $request) {
         //得到幼儿园id
         $kindergarten = $request -> session() -> get('kindergarten');
+//        dump($kindergarten);
         //获取要操作的模型
         $tableObj = new SmallappClassType();
-        $tableObj -> where('kindergarten',$kindergarten) -> get();
-        dump($tableObj);
+        $tableObj = $tableObj -> where('kindergarten',$kindergarten) -> get();
+        $tableData = $tableObj -> toArray();
+        return $tableData;
     }
 }

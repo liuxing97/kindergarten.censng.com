@@ -56,6 +56,7 @@ Route::post("/user/leader/newClass", ['uses' => 'SmallApp\Request\KindergartenCr
 
 //公用接口
 Route::post("/smallapp/common/getClassType", ['uses' => 'SmallApp\Request\CommonGetClassType@get']);
+Route::post("/smallapp/common/getClass", ['uses' => 'SmallApp\Request\CommonGetClass@get']);
 
 
 

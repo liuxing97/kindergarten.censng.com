@@ -24,6 +24,7 @@ class VerifyCsrfToken extends BaseVerifier
         '/user/leader/newNotice',
         '/user/leader/newClassType',
         '/smallapp/common/getClassType',
-        '/user/leader/newClass'
+        '/user/leader/newClass',
+        '/smallapp/common/getClass'
     ];
 }

@@ -21,6 +21,7 @@ class VerifyCsrfToken extends BaseVerifier
         '/user/center/createNewLeader/applyBind',
         '/user/center/createNewLeader/handle',
         '/user/center/createNewLeader/getWaitingList',
-        '/user/leader/newNotice'
+        '/user/leader/newNotice',
+        '/user/leader/newClassType'
     ];
 }

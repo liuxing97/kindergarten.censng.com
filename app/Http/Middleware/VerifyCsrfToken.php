@@ -23,6 +23,7 @@ class VerifyCsrfToken extends BaseVerifier
         '/user/center/createNewLeader/getWaitingList',
         '/user/leader/newNotice',
         '/user/leader/newClassType',
-        '/smallapp/common/getClassType'
+        '/smallapp/common/getClassType',
+        '/user/leader/newClass'
     ];
 }

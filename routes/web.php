@@ -53,6 +53,13 @@ Route::post("/user/leader/newClassType", ['uses' => 'SmallApp\Request\Kindergart
 Route::post("/user/leader/newClass", ['uses' => 'SmallApp\Request\KindergartenCreateClass@createClass']);
 //得到新建教师权限页面的小程序二维码
 Route::post('/user/leader/createTeacher/getQRCode',['uses' => 'SmallApp\Request\KindergartenCreateTeacher@getQRCode']);
+//创建教师权限页面的小程序处理逻辑-------绑定微信账户与权限-----申请操作
+Route::post('/user/leader/createTeacher/applyBind',['uses' => 'SmallApp\Request\KindergartenCreateTeacher@bindWechatApply']);
+//创建教师权限页面的小程序处理逻辑-------绑定微信账户与权限-----得到待处理列表
+Route::post('/user/leader/createTeacher/getWaitingList',['uses' => 'SmallApp\Request\KindergartenCreateTeacher@getWaitingList']);
+//创建教师权限页面的小程序处理逻辑-------绑定微信账户与权限-----处理操作
+Route::post('/user/leader/createTeacher/handle',['uses' => 'SmallApp\Request\KindergartenCreateTeacher@handle']);
+
 
 
 //公用接口

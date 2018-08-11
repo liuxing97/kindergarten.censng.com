@@ -19,12 +19,16 @@ class VerifyCsrfToken extends BaseVerifier
         '/user/getSession',
         '/user/center/createNewLeader/getQRCode',
         '/user/center/createNewLeader/applyBind',
-        '/user/center/createNewLeader/handle',
         '/user/center/createNewLeader/getWaitingList',
+        '/user/center/createNewLeader/handle',
         '/user/leader/newNotice',
         '/user/leader/newClassType',
         '/smallapp/common/getClassType',
         '/user/leader/newClass',
-        '/smallapp/common/getClass'
+        '/smallapp/common/getClass',
+        '/user/leader/createTeacher/getQRCode',
+        '/user/leader/createTeacher/applyBind',
+        '/user/leader/createTeacher/getWaitingList',
+        '/user/leader/createTeacher/handle',
     ];
 }

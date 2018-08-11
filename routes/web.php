@@ -45,13 +45,14 @@ Route::post('/user/center/createNewLeader/handle',['uses' => 'SmallApp\Request\C
 
 
 
-//园长-发布通知
+//园长-发布通知-user 指用户行为
 Route::post("/user/leader/newNotice", ['uses' => 'SmallApp\Request\KindergartenCreateNotice@newNotice']);
 //园长-创建班级类型
 Route::post("/user/leader/newClassType", ['uses' => 'SmallApp\Request\KindergartenCreateClassType@newType']);
 //园长-创建班级
 Route::post("/user/leader/newClass", ['uses' => 'SmallApp\Request\KindergartenCreateClass@createClass']);
-
+//得到新建教师权限页面的小程序二维码
+Route::post('/user/leader/createTeacher/getQRCode',['uses' => 'SmallApp\Request\KindergartenCreateTeacher@getQRCode']);
 
 
 //公用接口

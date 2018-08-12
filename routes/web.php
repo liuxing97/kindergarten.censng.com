@@ -62,6 +62,9 @@ Route::post('/user/leader/createTeacher/handle',['uses' => 'SmallApp\Request\Kin
 
 
 
+//老师发布本日家庭作业
+Route::get('/user/teacher/createHomework', ['uses' => 'SmallApp\Request\TeacherCreateHomework@saveHomework']);
+
 //公用接口
 Route::post("/smallapp/common/getClassType", ['uses' => 'SmallApp\Request\CommonGetClassType@get']);
 Route::post("/smallapp/common/getClass", ['uses' => 'SmallApp\Request\CommonGetClass@get']);

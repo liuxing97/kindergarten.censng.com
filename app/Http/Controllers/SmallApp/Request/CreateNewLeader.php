@@ -93,7 +93,7 @@ class CreateNewLeader extends Controller
         $appid = $request -> session() -> get('appid');
         //查询
         $applyListObj = new ControlAuthorityApply();
-        $applyListObj = $applyListObj -> where('kindergarten',$appid) -> where('action',NULL) ->get();
+        $applyListObj = $applyListObj -> where('kindergarten',$appid) -> where('action',NULL)-> where('applytype', 'leader') ->get();
         if($applyListObj){
             $applyListObj = $applyListObj -> toArray();
         }

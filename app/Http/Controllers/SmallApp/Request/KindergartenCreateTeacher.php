@@ -4,6 +4,8 @@ namespace App\Http\Controllers\SmallApp\Request;
 
 use App\ControlAuthorityApply;
 use App\Http\Controllers\SmallApp\Common\CreatQRCode;
+use App\SmallappAdmin;
+use App\SmallappClass;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -88,6 +90,89 @@ class KindergartenCreateTeacher extends Controller
         return $data;
 
     }
-    public function getWaitingList(){}
-    public function handle(){}
+
+    public function getWaitingList(Request $request){
+        $appid = $request -> session() -> get('appid');
+        //查询
+        $applyListObj = new ControlAuthorityApply();
+        $applyListObj = $applyListObj -> where('kindergarten',$appid) -> where('action',NULL) -> where('applytype', 'teacher') ->get();
+        if($applyListObj){
+            $applyListObj = $applyListObj -> toArray();
+            $time = 0;
+            foreach ($applyListObj as $applyItem){
+                //查询班级编号，得到班级名称，并追加到数组中
+                $classObj = new SmallappClass();
+                $classObj = $classObj -> find($applyItem['parameter']);
+                $applyItem['className'] = $classObj -> className;
+                $applyListObj[$time] = $applyItem;
+                $time++;
+            }
+        }
+        return $applyListObj;
+    }
+    public function handle(Request $request){//得到要处理的数据序号
+        $dataId = $request -> get('dataId');
+        //得到要处理的数据动作
+        $dataAction = $request -> get('dataAction');
+        if($dataAction != 'true' and $dataAction != 'false'){
+//            dump($dataAction);
+//            dump(Input::all());
+            return 'handle error';
+        }
+        //获取数据
+        $dataObj = new ControlAuthorityApply();
+//        $dataObj = $dataObj -> find($dataId);
+        $dataObj = $dataObj -> where('id',$dataId) -> where('action',NULL) -> where('applytype','teacher') -> first();
+        $dataObj -> action = $dataAction;
+        $res = $dataObj -> save();
+        $wechat = $dataObj -> wechat;
+        if($res){
+            //如果是要通过
+            if($dataAction == 'true'){
+                //创建账户
+                $res = $this -> creatUser($request,$wechat,$dataObj->parameter);
+                if($res){
+                    $data = [
+                        'msg' => 'action: '.$dataAction.' ,success',
+                        'time' => date('Y-m-d H:i:s')
+                    ];
+                }else{
+                    $data = [
+                        'msg' => 'action: '.$dataAction.' ,success,but create user fail',
+                        'time' => date('Y-m-d H:i:s')
+                    ];
+                }
+            }else{
+                $data = [
+                    'msg' => 'action: '.$dataAction.' ,success',
+                    'time' => date('Y-m-d H:i:s')
+                ];
+            }
+
+        }else{
+            $data = [
+                'msg' => 'action: '.$dataAction.' ,fail',
+                'time' => date('Y-m-d H:i:s')
+            ];
+        }
+        return $data;
+    }
+
+    //处理小程序待审核列表中的数据-创建新的园长用户到数据库
+    public function creatUser(Request $request,$wechat,$classid){
+        $tableObj = new SmallappAdmin();
+        $kindergarten = $request -> session() -> get('kindergarten');
+        $type = 'teacher';
+        $tableObj -> kindergarten = $kindergarten;
+        $tableObj -> wechat = $wechat;
+        $tableObj -> type = $type;
+        $tableObj -> classid = $classid;
+        $res = $tableObj -> save();
+        if($res){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
 }

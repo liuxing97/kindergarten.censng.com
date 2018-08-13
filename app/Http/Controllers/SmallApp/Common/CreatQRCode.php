@@ -163,9 +163,18 @@ class CreatQRCode extends Controller
 
         //调用微信公众平台接口
         $result = file_get_contents($url,false,$cxContext);
-
-        //生成图片
-        $imgDir = "./discounts/result/".$kindergarten.'/';
+        //生成图片-图片地址
+        $imgDir = "./discounts/QRCode/".$kindergarten.'/';
+        $resultDir = "./discounts/result/".$kindergarten.'/';
+        if(!file_exists($imgDir)){
+//            echo "文件创建成果";
+            mkdir ($imgDir,0777,true);
+            mkdir ($resultDir,0777,true);
+        }
+        else{
+//            echo "123";
+        }
+//        exit;
         //文件命名规则：md5(appid+classId)
         $filename=md5($wechat.$discountId).".jpg";///要生成的图片名字 md5(appid).jpg
 //        dump(file_exists($imgDir));

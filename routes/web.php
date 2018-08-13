@@ -72,7 +72,9 @@ Route::post("/smallapp/common/getClass", ['uses' => 'SmallApp\Request\CommonGetC
 
 
 //小程序优惠券部分-得到优惠转发图片
-Route::post("/discounts/signup/getshowphoto',['uses' => 'SmallApp\Request\DiscountsSignup@getShowPhoto']");
+Route::post("/discounts/signup/getshowphoto",['uses' => 'SmallApp\Request\DiscountsSignup@getShowPhoto']);
+//小程序优惠券部分-为某用户发放优惠券
+Route::post("/discounts/signup/grantDiscount",['uses' => 'SmallApp\Request\DiscountsSignup@handleGrant']);
 
 Route::get("/composer", ['uses' => 'SmallApp\Request\DiscountsSignup@composeImg']);
 

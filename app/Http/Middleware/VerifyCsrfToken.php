@@ -31,6 +31,7 @@ class VerifyCsrfToken extends BaseVerifier
         '/user/leader/createTeacher/getWaitingList',
         '/user/leader/createTeacher/handle',
         '/user/teacher/createHomework',
-        '/discounts/signup/getshowphoto'
+        '/discounts/signup/getshowphoto',
+        '/discounts/signup/grantDiscount'
     ];
 }

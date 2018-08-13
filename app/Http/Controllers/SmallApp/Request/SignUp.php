@@ -19,10 +19,15 @@ class SignUp extends Controller
     {
         //开启事务
         DB::beginTransaction();
-        //获取信息
-        $archiveParams = $request -> only('wechat','kindergarten','name','nickname','sex','birthday','allergy','hobby',
+        //获取微信号
+        $wechat = $request -> session() -> get('openid');
+        //获取幼儿园标识
+        $kindergarten = $request -> session() -> get('kindergarten');
+        //获取信息-创建档案所需要的信息
+        $archiveParams = $request -> only('babyName','babyNickName','babySex','birthday','allergy','hobby',
             'class','parents','phone','relationship');
-        $signUpParams = $request ->only('wechat','kindergarten','payType','cost','discount');
+        //获取信息-报名所需要的信息
+        $signUpParams = $request -> only('babyClassType','payType','classTypeCost','discount');
         //创建档案
         $babyDataObj = new Data();
         $isNewArchiveTrue = $babyDataObj -> newArchive($archiveParams);

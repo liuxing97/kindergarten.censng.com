@@ -63,7 +63,7 @@ Route::post('/user/leader/createTeacher/handle',['uses' => 'SmallApp\Request\Kin
 
 
 //老师发布本日家庭作业
-Route::get('/user/teacher/createHomework', ['uses' => 'SmallApp\Request\TeacherCreateHomework@saveHomework']);
+Route::post('/user/teacher/createHomework', ['uses' => 'SmallApp\Request\TeacherCreateHomework@saveHomework']);
 
 //公用接口
 Route::post("/smallapp/common/getClassType", ['uses' => 'SmallApp\Request\CommonGetClassType@get']);
@@ -71,15 +71,18 @@ Route::post("/smallapp/common/getClass", ['uses' => 'SmallApp\Request\CommonGetC
 
 
 
+//小程序优惠券部分-得到优惠转发图片
+Route::post("/discounts/signup/getshowphoto',['uses' => 'SmallApp\Request\DiscountsSignup@getShowPhoto']");
+
+Route::get("/composer", ['uses' => 'SmallApp\Request\DiscountsSignup@composeImg']);
+
 
 
 //小程序交互部分-报名
 Route::group(['prefix' => 'signup', 'namespace' => 'SmallApp'], function () {
 //    Route::get('new_archive', ['uses' => 'Request\SignUp@newArchive']);
-    Route::post('new_archive', function ()
-    {
-
-    });
+    Route::post('new_archive', ['uses' => 'Request\SignUp@newArchive']);
+    Route::post('hasDiscount', ['uses' => 'Request\SignUpDiscount@isHas']);
 });
 
 //小程序交互部分-相册

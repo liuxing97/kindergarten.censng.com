@@ -17,6 +17,9 @@ class DiscountsSignup extends Controller
     function handleGrant(Request $request){
         //得到转发人id
         $source = $request -> input('source');
+        if($source == 'self'){
+            $source = $request -> session() -> get('openid');
+        }
         //得到活动id
         $discountId = $request -> input('discountId');
         //得到阅读人id
@@ -25,16 +28,28 @@ class DiscountsSignup extends Controller
         $kindergarten = $request -> session() -> get('kindergarten');
         //判断是否相同
         if($source == $wechat){
-            $data = [
-                'msg' => 'user is same',
-                'time' => date('Y-m-d H:i:s')
-            ];
+            //判断是否已发放
+            //判断是否已发放
+            $tableObj = new BabyDiscount();
+            $tableObjRet = $tableObj -> where('wechat',$source) -> where('kindergarten',$kindergarten) -> where('discountId',$discountId) -> first();
+            //如果已发放
+            if($tableObjRet) {
+                $data = [
+                    'msg' => 'your discount has grant',
+                    'time' => date('Y-m-d H:i:s')
+                ];
+            }else {
+                $data = [
+                    'msg' => 'waiting your friend',
+                    'time' => date('Y-m-d H:i:s')
+                ];
+            }
         }else{
             //判断是否已发放
             $tableObj = new BabyDiscount();
-            $tableObj = $tableObj -> where('wechat',$source) -> where('kindergarten',$kindergarten) -> where('discountId',$discountId) -> first();
+            $tableObjRet = $tableObj -> where('wechat',$source) -> where('kindergarten',$kindergarten) -> where('discountId',$discountId) -> first();
             //如果已发放
-            if($tableObj){
+            if($tableObjRet){
                 $data = [
                     'msg' => 'hasGrant',
                     'time' => date('Y-m-d H:i:s')

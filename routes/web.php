@@ -81,7 +81,7 @@ Route::get("/composer", ['uses' => 'SmallApp\Request\DiscountsSignup@composeImg'
 
 
 //小程序交互部分-报名
-Route::group(['prefix' => 'signup', 'namespace' => 'SmallApp'], function () {
+Route::group(['prefix' => '/user/signup', 'namespace' => 'SmallApp'], function () {
 //    Route::get('new_archive', ['uses' => 'Request\SignUp@newArchive']);
     Route::post('new_archive', ['uses' => 'Request\SignUp@newArchive']);
     Route::post('hasDiscount', ['uses' => 'Request\SignUpDiscount@isHas']);

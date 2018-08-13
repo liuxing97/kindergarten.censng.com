@@ -12,7 +12,7 @@ class VerifyCsrfToken extends BaseVerifier
      * @var array
      */
     protected $except = [
-        '/signup/new_archive',
+        '/user/signup/new_archive',
         '/user/getUserInfo',
         '/user/onLogin',
         '/user/getIdentity',
@@ -32,6 +32,7 @@ class VerifyCsrfToken extends BaseVerifier
         '/user/leader/createTeacher/handle',
         '/user/teacher/createHomework',
         '/discounts/signup/getshowphoto',
-        '/discounts/signup/grantDiscount'
+        '/discounts/signup/grantDiscount',
+        '/user/signup/hasDiscount'
     ];
 }

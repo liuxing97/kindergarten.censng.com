@@ -12,7 +12,7 @@ class VerifyCsrfToken extends BaseVerifier
      * @var array
      */
     protected $except = [
-        '/user/signup/new_archive',
+        '/user/signup/signup',
         '/user/getUserInfo',
         '/user/onLogin',
         '/user/getIdentity',

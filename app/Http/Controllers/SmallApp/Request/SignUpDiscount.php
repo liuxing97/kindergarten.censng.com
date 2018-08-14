@@ -20,7 +20,7 @@ class SignUpDiscount extends Controller
         $isInvalid = 'false';
         //得到目前幼儿园正在举行的关于signup报名的活动
         $kindergartenDiscountObj = new KindergartenDiscount();
-        $kindergartenDiscountObj
+        $kindergartenDiscountObj = $kindergartenDiscountObj
             -> where('kindergarten',$kindergarten)
             -> where('purpose', 'signup')
             -> where('isInvalid',$isInvalid)
@@ -32,9 +32,11 @@ class SignUpDiscount extends Controller
                 'time' => date('Y-m-d H:i:s')
             ];
         }else{
+            $kindergartenDiscountArray = $kindergartenDiscountObj -> toArray();
+//            dump($kindergartenDiscountObj);
             $discountId = $kindergartenDiscountObj -> id;
             $babyDiscountObj = new BabyDiscount();
-            $babyDiscountObj
+            $babyDiscountObj = $babyDiscountObj
                 -> where('wechat',$wechat)
                 -> where('kindergarten',$kindergarten)
                 -> where('discountId',$discountId)
@@ -42,11 +44,14 @@ class SignUpDiscount extends Controller
                 -> where('isUse',$isUse)
                 -> first();
             if($babyDiscountObj){
+//                dump($babyDiscountObj);
                 $babyDiscountArray = $babyDiscountObj -> toArray();
+//                dump($babyDiscountArray);
                 //有适应的优惠券
                 $data = [
                     'msg' => 'user has discount',
                     'data' => $babyDiscountArray,
+                    'sourcedata' => $kindergartenDiscountArray,
                     'time' => date('Y-m-d H:i:s')
                 ];
             }else{

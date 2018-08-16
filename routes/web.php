@@ -59,7 +59,8 @@ Route::post('/user/leader/createTeacher/applyBind',['uses' => 'SmallApp\Request\
 Route::post('/user/leader/createTeacher/getWaitingList',['uses' => 'SmallApp\Request\KindergartenCreateTeacher@getWaitingList']);
 //创建教师权限页面的小程序处理逻辑-------绑定微信账户与权限-----处理操作
 Route::post('/user/leader/createTeacher/handle',['uses' => 'SmallApp\Request\KindergartenCreateTeacher@handle']);
-
+//园长得到宣传页面转发次数
+Route::post('/user/leader/propaganda/getVisit',['uses' => 'SmallApp\Request\KindergartenGetVisit@getData']);
 
 
 //老师发布本日家庭作业

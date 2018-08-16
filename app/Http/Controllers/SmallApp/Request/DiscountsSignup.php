@@ -36,7 +36,7 @@ class DiscountsSignup extends Controller
         //判断是否存在活动，没有存在活动的时候，fromTime的值可能为no time，自己进来的，也可能有时间，是失效的活动页面进入，no discount已经说明了无效，仅在最后，如果不是同一人，记录UV
         if($discountId == 'no discount'){
             //使用noDiscount驱动写UV，并给source和wechat
-            $ret = $this -> UVDrive('noDiscount',$source,$wechat,$kindergarten);
+            $ret = $this -> UVDrive($request,'noDiscount',$source,$wechat,$kindergarten);
             if(!$ret){
                 //设置返回值
                 $data = [
@@ -58,7 +58,7 @@ class DiscountsSignup extends Controller
                 //这是过期的优惠活动
             }else{
                 //使用discount驱动写UV，并给source和wechat,discountId
-                $ret = $this -> UVDrive('discount',$source,$wechat,$kindergarten,$discountId);
+                $ret = $this -> UVDrive($request,'discount',$source,$wechat,$kindergarten,$discountId);
                 if(!$ret){
                     //设置返回值
                     $data = [
@@ -327,7 +327,7 @@ class DiscountsSignup extends Controller
      * 使用discount驱动写UV，并给source和wechat,discountId
      * noDiscount驱动写UV，并给source和wechat
      */
-    function UVDrive($drive,$source,$wechat,$kindergarten,$discountId = null){
+    function UVDrive(Request $request,$drive,$source,$wechat,$kindergarten,$discountId = null){
         //如果是自己访问，不进行记录
         if($source == $wechat){
             return true;
@@ -344,14 +344,14 @@ class DiscountsSignup extends Controller
             }else{
                 //写入活动补充表中
                 $tableObj = new KindergartenDiscount();
-                $tableObj -> where('id', $discountId) -> first();
+                $tableObj = $tableObj -> where('id', $discountId) -> first();
+//                dump($tableObj);
                 $uv = $tableObj -> uv;
                 $tableObj -> uv = ++$uv;
                 $ret = $tableObj -> save();
                 $pvType = 'discount';
             }
             //记录以后PV应该存到那个数据库的哪条数据中
-            $request = new Request();
             $request -> session() -> put('pvType',$pvType);
             $request -> session() -> put('pvId',$tableObj ->id);
             if($ret){
@@ -367,25 +367,34 @@ class DiscountsSignup extends Controller
      * writePv
      */
     function writePv(Request $request){
-        $pvType = $request -> session() ->get('pvType');
+        $pvType = $request -> session() -> get('pvType');
+//        dump($pvType);
         $pvId = $request -> session() -> get('pvId');
-        if($pvType == 'discount'){
-            $tableObj = new KindergartenDiscount();
-            $tableObj = $tableObj -> where('id',$pvId)-> first();
+        if($pvType){
+            if($pvType == 'discount'){
+                $tableObj = new KindergartenDiscount();
+                $tableObj = $tableObj -> where('id',$pvId)-> first();
+            }else{
+                $tableObj = new NodiscountData();
+                $tableObj = $tableObj -> where('id',$pvId) -> first();
+            }
+            $pv = $tableObj -> pv;
+            $tableObj -> pv = ++$pv;
+            $ret = $tableObj -> save();
+            if($ret){
+                $data = [
+                    'msg' => 'pv success',
+                    'time' => date('Y-m-d H:i:s')
+                ];
+            }else{
+                $data = [
+                    'msg' => 'pv fail',
+                    'time' => date('Y-m-d H:i:s')
+                ];
+            }
         }else{
-            $tableObj = new NodiscountData();
-            $tableObj = $tableObj -> where('id',$pvId) -> first();
-        }
-        $pv = $tableObj -> pv;
-        $ret = $tableObj -> pv = ++$pv;
-        if($ret){
             $data = [
-                'msg' => 'pv success',
-                'time' => date('Y-m-d H:i:s')
-            ];
-        }else{
-            $data = [
-                'msg' => 'pv fail',
+                'msg' => 'dont need write pv',
                 'time' => date('Y-m-d H:i:s')
             ];
         }

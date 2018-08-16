@@ -30,7 +30,7 @@ class SignUp extends Controller
         $archiveParams = $request -> only('babyName','babyNickName','babySex','birthday','allergy','hobby',
             'parentName','parentPhone','relationship');
         //获取信息-报名所需要的信息
-        $signUpParams = $request -> only('babyName','babyClassType','payType','classTypeCost','discountId');
+        $signUpParams = $request -> only('parentName','parentPhone','babyName','babyClassType','payType','classTypeCost','discountId');
         //初始值
         $isHasBabyDef = false;
         $isHasSignupDef = false;
@@ -183,6 +183,8 @@ class SignUp extends Controller
         $signupObj -> wechat = $wechat;
         $signupObj -> babyId = $babyId;
         $signupObj -> kindergarten = $kindergarten;
+        $signupObj -> phone = $parameter['parentPhone'];
+        $signupObj -> parentName = $parameter['parentName'];
         $signupObj -> classType = $parameter['babyClassType'];
         $signupObj -> cost = $parameter['classTypeCost'];
         $signupObj -> semestarId = $semestarId;

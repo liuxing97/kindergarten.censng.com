@@ -61,6 +61,12 @@ Route::post('/user/leader/createTeacher/getWaitingList',['uses' => 'SmallApp\Req
 Route::post('/user/leader/createTeacher/handle',['uses' => 'SmallApp\Request\KindergartenCreateTeacher@handle']);
 //园长得到宣传页面转发次数
 Route::post('/user/leader/propaganda/getVisit',['uses' => 'SmallApp\Request\KindergartenGetVisit@getData']);
+//园长查询报名记录
+Route::post('/user/leader/signup/select',['uses' => 'SmallApp\Request\KindergartenGetSignup@getData']);
+//园长确认报名记录
+Route::post('/user/leader/signup/confirm',['uses' => 'SmallApp\Request\KindergartenConfirmSignup@confirm']);
+//园长得到所有本学期学生报名信息
+Route::get('/user/leader/signup/selectAll',['uses' => 'SmallApp\Request\KindergartenGetSignup@getAll']);
 
 
 //老师发布本日家庭作业

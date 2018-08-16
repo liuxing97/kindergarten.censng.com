@@ -4,9 +4,11 @@ namespace App\Http\Controllers\SmallApp\Request;
 
 use App\BabyDiscount;
 use App\Http\Controllers\SmallApp\Common\CreatQRCode;
+use App\Kindergarten;
 use App\KindergartenDiscount;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\NodiscountData;
 
 class DiscountsSignup extends Controller
 {
@@ -17,6 +19,7 @@ class DiscountsSignup extends Controller
     function handleGrant(Request $request){
         //得到转发人id
         $source = $request -> input('source');
+        //自己进来的，没有通过转发二维码进入
         if($source == 'self'){
             $source = $request -> session() -> get('openid');
         }
@@ -26,55 +29,124 @@ class DiscountsSignup extends Controller
         $wechat = $request -> session() -> get('openid');
         //得到所属幼儿园
         $kindergarten = $request -> session() -> get('kindergarten');
-        //判断是否相同
-        if($source == $wechat){
-            //判断是否已发放
-            //判断是否已发放
-            $tableObj = new BabyDiscount();
-            $tableObjRet = $tableObj -> where('wechat',$source) -> where('kindergarten',$kindergarten) -> where('discountId',$discountId) -> first();
-            //如果已发放
-            if($tableObjRet) {
+
+
+
+
+        //判断是否存在活动，没有存在活动的时候，fromTime的值可能为no time，自己进来的，也可能有时间，是失效的活动页面进入，no discount已经说明了无效，仅在最后，如果不是同一人，记录UV
+        if($discountId == 'no discount'){
+            //使用noDiscount驱动写UV，并给source和wechat
+            $ret = $this -> UVDrive('noDiscount',$source,$wechat,$kindergarten);
+            if(!$ret){
+                //设置返回值
                 $data = [
-                    'msg' => 'your discount has grant',
+                    'msg' => 'write uv error',
                     'time' => date('Y-m-d H:i:s')
                 ];
-            }else {
+            }else{
+                //设置返回值
                 $data = [
-                    'msg' => 'waiting your friend',
+                    'msg' => 'no discount',
                     'time' => date('Y-m-d H:i:s')
                 ];
             }
         }else{
-            //判断是否已发放
-            $tableObj = new BabyDiscount();
-            $tableObjRet = $tableObj -> where('wechat',$source) -> where('kindergarten',$kindergarten) -> where('discountId',$discountId) -> first();
-            //如果已发放
-            if($tableObjRet){
-                $data = [
-                    'msg' => 'hasGrant',
-                    'time' => date('Y-m-d H:i:s')
-                ];
+            //得到所来的验证码时间参数
+            $fromTime = $request -> input('fromTime');
+            //判断时间是否<存在的活动创建时间
+            if($fromTime == 'guyicuowu'){
+                //这是过期的优惠活动
             }else{
-                //发放
-                $tableObj -> kindergarten = $kindergarten;
-                $tableObj -> wechat = $source;
-                $tableObj -> discountId = $discountId;
-                $ret = $tableObj -> save();
-                if($ret){
+                //使用discount驱动写UV，并给source和wechat,discountId
+                $ret = $this -> UVDrive('discount',$source,$wechat,$kindergarten,$discountId);
+                if(!$ret){
+                    //设置返回值
                     $data = [
-                        'msg' => 'grant success',
+                        'msg' => 'write uv error',
                         'time' => date('Y-m-d H:i:s')
                     ];
                 }else{
-                    $data = [
-                        'msg' => 'grant fail',
-                        'time' => date('Y-m-d H:i:s')
-                    ];
+                    //判断是否相同
+                    if($source == $wechat){
+                        //判断是否已发放
+                        $tableObj = new BabyDiscount();
+                        $tableObjRet = $tableObj -> where('wechat',$source) -> where('kindergarten',$kindergarten) -> where('discountId',$discountId) -> first();
+                        //如果已发放
+                        if($tableObjRet) {
+                            $data = [
+                                'msg' => 'your discount has grant',
+                                'time' => date('Y-m-d H:i:s')
+                            ];
+                        }else {
+                            $data = [
+                                'msg' => 'waiting your friend',
+                                'time' => date('Y-m-d H:i:s')
+                            ];
+                        }
+                    }
+                    else{
+                        //判断是否已发放
+                        $tableObj = new BabyDiscount();
+                        $tableObjRet = $tableObj -> where('wechat',$source) -> where('kindergarten',$kindergarten) -> where('discountId',$discountId) -> first();
+                        //如果已发放
+                        if($tableObjRet){
+                            $data = [
+                                'msg' => 'hasGrant',
+                                'time' => date('Y-m-d H:i:s')
+                            ];
+                        }else{
+                            //发放
+                            $tableObj -> kindergarten = $kindergarten;
+                            $tableObj -> wechat = $source;
+                            $tableObj -> discountId = $discountId;
+                            $ret = $tableObj -> save();
+                            if($ret){
+                                $data = [
+                                    'msg' => 'grant success',
+                                    'time' => date('Y-m-d H:i:s')
+                                ];
+                            }else{
+                                $data = [
+                                    'msg' => 'grant fail',
+                                    'time' => date('Y-m-d H:i:s')
+                                ];
+                            }
+                        }
+                    }
                 }
             }
         }
         return $data;
     }
+
+    /**
+     * 小程序判断是否幼儿园有活动
+     */
+    function isHasDiscount(Request $request){
+        $kindergarten = $request -> session() -> get('kindergarten');
+        //查询是否有正在进行中的活动
+        $disCountObj = new KindergartenDiscount();
+        $disCountObj = $disCountObj ->where('kindergarten',$kindergarten)
+            -> where('purpose','signup')
+            -> where('isInvalid', 'false') -> first();
+
+        //如果没活动，返回 no discount
+        if($disCountObj){
+            $disCountArray = $disCountObj -> toArray();
+            $data = [
+                'msg' => 'has discount',
+                'data' => $disCountArray,
+                'time' => date('Y-m-d H:i:s')
+            ];
+        }else{
+            $data = [
+                'msg' => 'no discount',
+                'time' => date('Y-m-d H:i:s')
+            ];
+        }
+        return $data;
+    }
+
 
     /**
      * 获取优惠券图片
@@ -90,14 +162,29 @@ class DiscountsSignup extends Controller
         $wechat = $request -> session() -> get('openid');
         //得到优惠券id
         $discountId = $request -> input('discountId');
-        //获取优惠活动详情
-        $discountObj = new KindergartenDiscount();
+        //如果不存在优惠活动
+        if($discountId == 'no discount'){
+            //使用默认宣传背景
+            $discountPara = 'defBgImg';
+            //优惠券id为参数识别有效期的改为，不改，没有优惠活动，直接用wechat作为标识，无优惠活动，即无目的性，仅园方登记某段时间内的转发次数
+            //最终路径地址
+            $resultPath = "/discounts/result/".$kindergarten."/".md5($wechat).'.jpg';
+            $src = "https://".$_SERVER['SERVER_NAME']."/discounts/result/".$kindergarten."/".md5($wechat).'.jpg';
+            $creatDrive = 'no discount';
+        }else{
+            //获取优惠活动详情
+            $discountObj = new KindergartenDiscount();
 //        dump($discountId);
-        $discountObj = $discountObj -> find($discountId);
+            $discountObj = $discountObj -> find($discountId);
 //        dump($discountObj);
-        $discountPara = $discountObj -> parameter;
+            $discountPara = $discountObj -> parameter;
 //        dump($discountPara);
 //        exit();
+            //最终路径地址
+            $resultPath = "/discounts/result/".$kindergarten."/".md5($wechat.$discountId).'.jpg';
+            $src = "https://".$_SERVER['SERVER_NAME']."/discounts/result/".$kindergarten."/".md5($wechat.$discountId).'.jpg';
+            $creatDrive = 'has discount';
+        }
         if($discountPara == 'defBgImg'){
             //得到使用的哪种宣传背景
             $drive = 'def';
@@ -105,9 +192,7 @@ class DiscountsSignup extends Controller
         else{
             $drive = 'a';
         }
-        //最终路径地址
-        $resultPath = "/discounts/result/".$kindergarten."/".md5($wechat.$discountId).'.jpg';
-        $src = "https://".$_SERVER['SERVER_NAME']."/discounts/result/".$kindergarten."/".md5($wechat.$discountId).'.jpg';
+
         //判断是否已存在用户的优惠图片
         if(file_exists($resultPath)){
 //            dump('has');
@@ -121,10 +206,10 @@ class DiscountsSignup extends Controller
 //            dump("not has");
             //调用创建二维码
             $creatQRCodeObj = new CreatQRCode();
-            $ret = $creatQRCodeObj -> newDiscountQRCode($request);
+            $ret = $creatQRCodeObj -> newDiscountQRCode($request,$creatDrive);
             if($ret){
                 //合成图片
-                $res = $this->composeImg($request,$drive);
+                $res = $this->composeImg($request,$drive,$creatDrive);
                 if($res){
                     //返回图片地址
                     $data = [
@@ -159,20 +244,29 @@ class DiscountsSignup extends Controller
      * @param int $newY
      * @param Request $request
      */
-    function composeImg(Request $request,$type = 'def',$newW = 465,$newX=308,$newY=285){
+    function composeImg(Request $request,$type = 'def',$creatDrive,$newW = 465,$newX=308,$newY=285){
         //得到幼儿园编号
         $kindergarten = $request -> session() -> get('kindergarten');
         //得到微信id
         $wechat = $request -> session() -> get('openid');
-        //得到优惠券id
-        $discountId = $request -> input('discountId');
+        if($creatDrive == 'no discount'){
+
+        }else{
+            //得到优惠券id
+            $discountId = $request -> input('discountId');
+        }
         //根据驱动选择背景图片地址
         if($type == 'def') {
             $bgPath = './discounts/source/bg1.jpg';
         }else{
             $bgPath = '';
         }
-        $qrPath = './discounts/QRCode/'.$kindergarten.'/'.md5($wechat.$discountId).'.jpg';
+
+        if($creatDrive == 'no discount'){
+            $qrPath = './discounts/QRCode/'.$kindergarten.'/'.md5($wechat).'.jpg';
+        }else{
+            $qrPath = './discounts/QRCode/'.$kindergarten.'/'.md5($wechat.$discountId).'.jpg';
+        }
         $dst_path = $bgPath;
         $src_path = $qrPath;
 
@@ -193,7 +287,13 @@ class DiscountsSignup extends Controller
         //生成图片
         $imgDir = "./discounts/result/".$kindergarten.'/';
         //文件命名规则：md5(appid+classId)
-        $filename=md5($wechat.$discountId).".jpg";///要生成的图片名字 md5(appid).jpg
+        if($creatDrive == 'no discount'){
+            $filename=md5($wechat).".jpg";///要生成的图片名字 md5(appid).jpg
+        }else{
+
+            $filename=md5($wechat.$discountId).".jpg";///要生成的图片名字 md5(appid).jpg
+        }
+
         imagejpeg($dst,$imgDir.$filename);
 //        dump(file_exists($imgDir));
 //        $xmlstr = $dst;
@@ -220,5 +320,39 @@ class DiscountsSignup extends Controller
             return false;
         }
         return $filePath;
+    }
+
+    /**
+     * UV驱动
+     * 使用discount驱动写UV，并给source和wechat,discountId
+     * noDiscount驱动写UV，并给source和wechat
+     */
+    function UVDrive($drive,$source,$wechat,$kindergarten,$discountId = null){
+        //如果是自己访问，不进行记录
+        if($source == $wechat){
+            return true;
+        }else{
+            //判断驱动
+            if($drive == 'noDiscount'){
+               // 写入最近的无活动转发登记表中
+                $tableObj = new NodiscountData();
+                $tableObj -> where('kindergarten', $kindergarten) -> where('isZero',null) -> first();
+                $uv = $tableObj -> uv;
+                $tableObj -> uv = ++$uv;
+                $ret = $tableObj -> save();
+            }else{
+                //写入活动补充表中
+                $tableObj = new KindergartenDiscount();
+                $tableObj -> where('id', $discountId) -> first();
+                $uv = $tableObj -> uv;
+                $tableObj -> uv = ++$uv;
+                $ret = $tableObj -> save();
+            }
+            if($ret){
+                return true;
+            }else{
+                return false;
+            }
+        }
     }
 }

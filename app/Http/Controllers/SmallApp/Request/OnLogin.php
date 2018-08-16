@@ -64,6 +64,9 @@ class OnLogin
             //解析获取的openid与session_key
             $result = json_decode($result);
 //            dump($result);
+//            dump($appId);
+//            dump($appSecret);
+//            exit;
             $userOpenid = $result ->openid;
             $request -> session() -> put('openid',$userOpenid);
 //            dump($userOpenid);

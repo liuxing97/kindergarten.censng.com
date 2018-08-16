@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\SmallApp\Request;
 
 use App\Baby;
+use App\BabyDiscount;
 use App\BabyMore;
 use App\BabySignup;
+use App\KindergartenDiscount;
 use App\KindergartenSemester;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -26,9 +28,9 @@ class SignUp extends Controller
         $kindergarten = $request -> session() -> get('kindergarten');
         //获取信息-创建档案所需要的信息
         $archiveParams = $request -> only('babyName','babyNickName','babySex','birthday','allergy','hobby',
-            'parents','phone','relationship');
+            'parentName','parentPhone','relationship');
         //获取信息-报名所需要的信息
-        $signUpParams = $request -> only('babyClassType','payType','classTypeCost','discountId');
+        $signUpParams = $request -> only('babyName','babyClassType','payType','classTypeCost','discountId');
         //初始值
         $isHasBabyDef = false;
         $isHasSignupDef = false;
@@ -36,13 +38,14 @@ class SignUp extends Controller
         //创建宝宝用户
         $babyObj = new Baby();
         $signupObj = new BabySignup();
-        $semesterObj = new KindergartenSemester();
+        $semestarObj = new KindergartenSemester();
         //得到已开始，没有结束的学期
-        $semesterObj = $semesterObj -> where('kindergarten',$kindergarten) -> where('end',NULL) -> get();
+        $semestarObj = $semestarObj -> where('kindergarten',$kindergarten) -> where('end',NULL) -> first();
         //如果本学期已开始
-        if($semesterObj){
+        if($semestarObj){
+//            dump($semestarObj);
             //本学期id是
-            $semesterId = $semesterObj -> id;
+            $semestarId = $semestarObj -> id;
             //判断是否已经创建过用户信息
             $isHasObj = $babyObj -> where('wechat',$wechat) -> get();
             //如果宝宝资料已创建过
@@ -57,13 +60,13 @@ class SignUp extends Controller
                 }
             }
             //判断是否已报名过
-            $isHasSignupObj = $signupObj -> where('wechat',$wechat) -> where('semestarId',$semesterId) -> get();
+            $isHasSignupObj = $signupObj -> where('wechat',$wechat) -> where('semestarId',$semestarId) -> get();
             //如果已存在报名记录
             if($isHasSignupObj){
                 //判断要建立宝宝的名字，在报名表中已存在
                 foreach($isHasSignupObj as $signupObj){
                     $name = $signupObj -> name;
-                    if($signUpParams['name'] == $name){
+                    if($signUpParams['babyName'] == $name){
                         //已存在报名记录
                         $isHasSignupDef = true;
                     }
@@ -75,8 +78,10 @@ class SignUp extends Controller
                 //没用户 没报名----调用新档案 -调用新报名
                 $creatArchRes = $this -> createBaby($wechat,$kindergarten,$archiveParams);
                 if($creatArchRes){
-                    $createSignupRes = $this -> createSignupData($wechat,$creatArchRes,$kindergarten,$signUpParams);
+                    $createSignupRes = $this -> createSignupData($wechat,$creatArchRes,$kindergarten,$signUpParams,$semestarId);
                     if($createSignupRes){
+                        //调用创建订单，如果有使用优惠券则进行报销
+                        Db::commit();
                         $data = [
                             'msg' => 'signup success',
                             'data' => $createSignupRes,
@@ -142,9 +147,10 @@ class SignUp extends Controller
         $baseTableObj -> kindergarten = $kindergarten;
         $baseTableObj -> name = $parameter['babyName'];
         $baseTableObj -> nickname = $parameter['babyNickName'];
+        $baseTableObj -> phone = $parameter['parentPhone'];
         $baseTableObj -> sex = $parameter['babySex'];
         $baseTableObj -> birthday = $parameter['birthday'];
-        $baseTableObj -> partnets = $parameter['parents'];
+        $baseTableObj -> parents = $parameter['parentName'];
         $baseTableObj -> relationship = $parameter['relationship'];
         $baseRes = $baseTableObj -> save();
         if($baseRes){
@@ -170,17 +176,30 @@ class SignUp extends Controller
     /**
      * 创建报名信息
      */
-    protected function createSignupData($wechat,$babyId,$kindergarten,$parameter){
+    protected function createSignupData($wechat,$babyId,$kindergarten,$parameter,$semestarId){
         //报名信息
         $signupObj = new BabySignup();
+        $signupObj -> name = $parameter['babyName'];
         $signupObj -> wechat = $wechat;
         $signupObj -> babyId = $babyId;
         $signupObj -> kindergarten = $kindergarten;
         $signupObj -> classType = $parameter['babyClassType'];
         $signupObj -> cost = $parameter['classTypeCost'];
-        if($parameter['discountId'] != 'null'){
-            //暂时先不判断优惠券是否有效，默认为有效，直接写入
-            $signupObj -> discountId = $parameter['discountId'];
+        $signupObj -> semestarId = $semestarId;
+        if($parameter['discountId'] != 'null' && $parameter['discountId'] != null){
+//            dump($parameter);
+//            dump($parameter['discountId']);
+            //判断优惠券是否有效
+            $discountObj = new BabyDiscount();
+            $discountObj = $discountObj -> where('id',$parameter['discountId']) -> first();
+            $discountObj -> isUse = 'true';
+            $discountObj -> isInvalid = 'true';
+            $res = $discountObj -> save();
+            if($res){
+                $signupObj -> discountId = $parameter['discountId'];
+            }else{
+                return false;
+            }
         }
         $signupObj -> paytype = $parameter['payType'];
         $res = $signupObj -> save();
@@ -190,6 +209,7 @@ class SignUp extends Controller
                 //订单号为：md5(wechat+time)
                 $orderNum = 1;
             }else{
+//                echo "123";
                 return true;
             }
         }else{
@@ -197,10 +217,4 @@ class SignUp extends Controller
         }
     }
 
-    /**
-     * 生成订单
-     */
-    function createOrder ($wechat){
-
-    }
 }

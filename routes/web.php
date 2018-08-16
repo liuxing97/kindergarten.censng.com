@@ -70,7 +70,8 @@ Route::post("/smallapp/common/getClassType", ['uses' => 'SmallApp\Request\Common
 Route::post("/smallapp/common/getClass", ['uses' => 'SmallApp\Request\CommonGetClass@get']);
 
 
-
+//幼儿园是否存在活动
+Route::post("/discounts/signup/hasDiscount",['uses' => 'SmallApp\Request\DiscountsSignup@isHasDiscount']);
 //小程序优惠券部分-得到优惠转发图片
 Route::post("/discounts/signup/getshowphoto",['uses' => 'SmallApp\Request\DiscountsSignup@getShowPhoto']);
 //小程序优惠券部分-为某用户发放优惠券
@@ -83,8 +84,9 @@ Route::get("/composer", ['uses' => 'SmallApp\Request\DiscountsSignup@composeImg'
 //小程序交互部分-报名
 Route::group(['prefix' => '/user/signup', 'namespace' => 'SmallApp'], function () {
 //    Route::get('new_archive', ['uses' => 'Request\SignUp@newArchive']);
-    Route::post('signup', ['uses' => 'Request\SignUp@creatSignup']);
-    Route::post('hasDiscount', ['uses' => 'Request\SignUpDiscount@isHas']);
+    Route::post('signup', ['uses' => 'Request\SignUp@createSignup']);
+    //用户是否有优惠券
+    Route::post('hasDiscount', ['uses' => 'Request\SignUpDiscount@isHasDiscount']);
 });
 
 //小程序交互部分-相册

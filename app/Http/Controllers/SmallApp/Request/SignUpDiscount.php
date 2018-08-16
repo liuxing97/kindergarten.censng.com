@@ -12,7 +12,7 @@ class SignUpDiscount extends Controller
     /**
      * 是否存在优惠券
      */
-    public function isHas(Request $request){
+    public function isHasDiscount(Request $request){
         $discountObj = new BabyDiscount();
         $kindergarten = $request -> session() -> get('kindergarten');
         $wechat = $request -> session() -> get('openid');

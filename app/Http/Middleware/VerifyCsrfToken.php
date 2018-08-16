@@ -33,6 +33,7 @@ class VerifyCsrfToken extends BaseVerifier
         '/user/teacher/createHomework',
         '/discounts/signup/getshowphoto',
         '/discounts/signup/grantDiscount',
-        '/user/signup/hasDiscount'
+        '/user/signup/hasDiscount',
+        '/discounts/signup/hasDiscount'
     ];
 }

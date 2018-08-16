@@ -134,11 +134,15 @@ class CreatQRCode extends Controller
         return $filePath;
     }
 
-    function newDiscountQRCode(Request $request) {
+    function newDiscountQRCode(Request $request,$creatDrive) {
         //得到微信标识
         $wechat = $request -> session() -> get('openid');
-        //得到优惠券id
-        $discountId = $request -> input('discountId');
+        if($creatDrive == 'no discount'){
+
+        }else{
+            //得到优惠券id
+            $discountId = $request -> input('discountId');
+        }
         //得到是幼儿园编号
         $kindergarten = $request -> session() -> get('kindergarten');
         //得到access_token
@@ -148,8 +152,8 @@ class CreatQRCode extends Controller
         //请求二维码二进制流
         $url = "https://api.weixin.qq.com/wxa/getwxacode?access_token=".$ACCESS_TOKEN;
 //        dump($url);
-        //调用环境配置 wechat用来验证是否已转发，只要有别人点开，优惠券即生效
-        $path = "discount/signupDiscount/signupDiscount?wechat=".$wechat;
+        //调用环境配置 wechat用来验证是否已转发，只要有别人点开，优惠券即生效,time标注转发时间
+        $path = "discount/signupDiscount/signupDiscount?wechat=".$wechat."&time=".time();
         $post_data='{"path":"'.$path.'","width":"800"}';
         $aContext = array(
             'http' => array(
@@ -176,7 +180,11 @@ class CreatQRCode extends Controller
         }
 //        exit;
         //文件命名规则：md5(appid+classId)
-        $filename=md5($wechat.$discountId).".jpg";///要生成的图片名字 md5(appid).jpg
+        if($creatDrive == 'no discount'){
+            $filename=md5($wechat).".jpg";///要生成的图片名字 md5(appid).jpg
+        }else{
+            $filename=md5($wechat.$discountId).".jpg";///要生成的图片名字 md5(appid).jpg
+        }
 //        dump(file_exists($imgDir));
         $xmlstr = $result;
         if(empty($xmlstr)) {

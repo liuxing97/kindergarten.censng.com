@@ -72,9 +72,11 @@ Route::post("/smallapp/common/getClass", ['uses' => 'SmallApp\Request\CommonGetC
 
 //幼儿园是否存在活动
 Route::post("/discounts/signup/hasDiscount",['uses' => 'SmallApp\Request\DiscountsSignup@isHasDiscount']);
+//幼儿园处理转发PV
+Route::post("/discounts/signup/writePv",['uses' => 'SmallApp\Request\DiscountsSignup@writePv']);
 //小程序优惠券部分-得到优惠转发图片
 Route::post("/discounts/signup/getshowphoto",['uses' => 'SmallApp\Request\DiscountsSignup@getShowPhoto']);
-//小程序优惠券部分-为某用户发放优惠券
+//小程序优惠券部分-为某用户发放优惠券-同时处理UV
 Route::post("/discounts/signup/grantDiscount",['uses' => 'SmallApp\Request\DiscountsSignup@handleGrant']);
 
 Route::get("/composer", ['uses' => 'SmallApp\Request\DiscountsSignup@composeImg']);

@@ -336,10 +336,11 @@ class DiscountsSignup extends Controller
             if($drive == 'noDiscount'){
                // 写入最近的无活动转发登记表中
                 $tableObj = new NodiscountData();
-                $tableObj -> where('kindergarten', $kindergarten) -> where('isZero',null) -> first();
+                $tableObj = $tableObj -> where('kindergarten', $kindergarten) -> where('isZero',null) -> first();
                 $uv = $tableObj -> uv;
                 $tableObj -> uv = ++$uv;
                 $ret = $tableObj -> save();
+                $pvType = 'tempPv';
             }else{
                 //写入活动补充表中
                 $tableObj = new KindergartenDiscount();
@@ -347,12 +348,47 @@ class DiscountsSignup extends Controller
                 $uv = $tableObj -> uv;
                 $tableObj -> uv = ++$uv;
                 $ret = $tableObj -> save();
+                $pvType = 'discount';
             }
+            //记录以后PV应该存到那个数据库的哪条数据中
+            $request = new Request();
+            $request -> session() -> put('pvType',$pvType);
+            $request -> session() -> put('pvId',$tableObj ->id);
             if($ret){
                 return true;
             }else{
                 return false;
             }
         }
+    }
+
+    /**
+     * 处理PV
+     * writePv
+     */
+    function writePv(Request $request){
+        $pvType = $request -> session() ->get('pvType');
+        $pvId = $request -> session() -> get('pvId');
+        if($pvType == 'discount'){
+            $tableObj = new KindergartenDiscount();
+            $tableObj = $tableObj -> where('id',$pvId)-> first();
+        }else{
+            $tableObj = new NodiscountData();
+            $tableObj = $tableObj -> where('id',$pvId) -> first();
+        }
+        $pv = $tableObj -> pv;
+        $ret = $tableObj -> pv = ++$pv;
+        if($ret){
+            $data = [
+                'msg' => 'pv success',
+                'time' => date('Y-m-d H:i:s')
+            ];
+        }else{
+            $data = [
+                'msg' => 'pv fail',
+                'time' => date('Y-m-d H:i:s')
+            ];
+        }
+        return $data;
     }
 }

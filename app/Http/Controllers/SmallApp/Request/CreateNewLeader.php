@@ -56,7 +56,7 @@ class CreateNewLeader extends Controller
 
     public function bindWechatApply(Request $request){
 //        dump($request ->session() ->all());
-        $appid = $request -> session() -> get('appid');
+        $appid = $request -> session() -> get('kindergarten');
         $wechat = $request -> session() -> get('openid');
         //判断是否已经存在过未处理的申请，或已成功的申请。
         $isApplyObj = new ControlAuthorityApply();

@@ -25,6 +25,7 @@ class KindergartenGetSignup extends Controller
             -> where('end',null)
             -> first();
         $semesterId = $semesterObj -> id;
+//        dump($semesterId);
         //宝宝表
         $talbeObj = new BabySignup();
         if($drive == 'phone'){
@@ -39,7 +40,7 @@ class KindergartenGetSignup extends Controller
                 -> first();
         }
         if($talbeObj){
-            $dataArray = $talbeObj -> save();
+            $dataArray = $talbeObj -> toArray();
             $data = [
                 'msg' => 'get success',
                 'data' => $dataArray,
@@ -56,8 +57,8 @@ class KindergartenGetSignup extends Controller
 
     function getAll(Request $request){
         //得到当前学期id
-//        $kindergarten = $request -> session() -> get('kindergarten');
-        $kindergarten = 80000001;
+        $kindergarten = $request -> session() -> get('kindergarten');
+//        $kindergarten = 80000001;
         $semesterObj = new KindergartenSemester();
         $semesterObj = $semesterObj -> where('kindergarten',$kindergarten)
             -> where('end',null)
@@ -78,7 +79,7 @@ class KindergartenGetSignup extends Controller
         }else{
 //            dump($items);
             $tableArray = $talbeObj -> toArray();
-            dump($tableArray);
+//            dump($tableArray);
             $data = [
                 'msg' => 'get data success',
                 'data' => $tableArray,

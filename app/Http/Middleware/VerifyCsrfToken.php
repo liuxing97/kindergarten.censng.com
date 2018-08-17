@@ -38,6 +38,8 @@ class VerifyCsrfToken extends BaseVerifier
         '/discounts/signup/writePv',
         '/user/leader/propaganda/getVisit',
         '/user/leader/signup/select',
-        '/user/leader/signup/confirm'
+        '/user/leader/signup/confirm',
+        '/user/leader/signup/selectAll',
+        '/createAdmin'
     ];
 }

@@ -66,7 +66,8 @@ Route::post('/user/leader/signup/select',['uses' => 'SmallApp\Request\Kindergart
 //园长确认报名记录
 Route::post('/user/leader/signup/confirm',['uses' => 'SmallApp\Request\KindergartenConfirmSignup@confirm']);
 //园长得到所有本学期学生报名信息
-Route::get('/user/leader/signup/selectAll',['uses' => 'SmallApp\Request\KindergartenGetSignup@getAll']);
+Route::post('/user/leader/signup/selectAll',['uses' => 'SmallApp\Request\KindergartenGetSignup@getAll']);
+//Route::post('/user/leader/signup/selectAll?page={page?}',['uses' => 'SmallApp\Request\KindergartenGetSignup@getAll']);
 
 
 //老师发布本日家庭作业
@@ -87,7 +88,8 @@ Route::post("/discounts/signup/getshowphoto",['uses' => 'SmallApp\Request\Discou
 Route::post("/discounts/signup/grantDiscount",['uses' => 'SmallApp\Request\DiscountsSignup@handleGrant']);
 
 Route::get("/composer", ['uses' => 'SmallApp\Request\DiscountsSignup@composeImg']);
-
+//创建管理员
+Route::post("/createAdmin",['uses' => 'SmallApp\Request\CreateNewAdmin@create']);
 
 
 //小程序交互部分-报名

@@ -28,6 +28,9 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'admin', 'as' => 'admin.'], 
 });
 
 
+Route::post('/kindergarten/show/getPhotos',['uses' => 'SmallApp\Request\KindergartenGetShowPhotos@getPhotos']);
+
+
 //小程序所有用户的初始动作
 Route::post('/user/getSession',['uses' => 'SmallApp\Request\Session@getSession']);
 Route::get('/user/getUserInfo', ['uses' => 'SmallApp\Request\GetUserInfo@getIdentity']);
@@ -90,6 +93,11 @@ Route::post("/discounts/signup/grantDiscount",['uses' => 'SmallApp\Request\Disco
 Route::get("/composer", ['uses' => 'SmallApp\Request\DiscountsSignup@composeImg']);
 //创建管理员
 Route::post("/createAdmin",['uses' => 'SmallApp\Request\CreateNewAdmin@create']);
+
+Route::post("/refresh",function (){
+
+});
+
 
 
 //小程序交互部分-报名

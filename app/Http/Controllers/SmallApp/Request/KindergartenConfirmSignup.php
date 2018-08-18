@@ -14,19 +14,31 @@ class KindergartenConfirmSignup extends Controller
         $tableObj = new BabySignup();
         $tableObj = $tableObj -> where('id',$confirmId) -> first();
         if($tableObj){
-            $tableObj -> payed = 'true';
-            $tableObj -> paytime = date('Y-m-d H:i:s');
-            $res = $tableObj -> save();
-            if($res){
+            if($tableObj -> payed == 'true'){
                 $data = [
-                    'msg' => 'confirm success',
-                    'time' => date('Y-m-d H:i:s')
+                    'msg' => 'signuped',
+                    'time' => time()
+                ];
+            }else if($tableObj -> payed == 'false'){
+                $data = [
+                    'msg' => 'signuped false',
+                    'time' => time()
                 ];
             }else{
-                $data = [
-                    'msg' => 'confirm error',
-                    'time' => date('Y-m-d H:i:s')
-                ];
+                $tableObj -> payed = 'true';
+                $tableObj -> paytime = date('Y-m-d H:i:s');
+                $res = $tableObj -> save();
+                if($res){
+                    $data = [
+                        'msg' => 'confirm success',
+                        'time' => date('Y-m-d H:i:s')
+                    ];
+                }else{
+                    $data = [
+                        'msg' => 'confirm error',
+                        'time' => date('Y-m-d H:i:s')
+                    ];
+                }
             }
         }else{
             $data = [

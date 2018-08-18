@@ -60,7 +60,8 @@ class CreateNewLeader extends Controller
         $wechat = $request -> session() -> get('openid');
         //判断是否已经存在过未处理的申请，或已成功的申请。
         $isApplyObj = new ControlAuthorityApply();
-        $isApplyObj = $isApplyObj -> where('wechat',$wechat) -> where('action',NULL) -> orWhere('action','true') -> first();
+        $isApplyObj = $isApplyObj -> where('wechat',$wechat)
+            -> where('action','true') -> first();
         if($isApplyObj){
             $data = [
                 'msg' => 'has apply',
@@ -90,7 +91,7 @@ class CreateNewLeader extends Controller
 
     //得到所有本小程序待审核列表-园长申请权限列表
     public function getWaitingList(Request $request){
-        $appid = $request -> session() -> get('appid');
+        $appid = $request -> session() -> get('kindergarten');
         //查询
         $applyListObj = new ControlAuthorityApply();
         $applyListObj = $applyListObj -> where('kindergarten',$appid) -> where('action',NULL)-> where('applytype', 'leader') ->get();

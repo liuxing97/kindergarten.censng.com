@@ -40,6 +40,7 @@ class VerifyCsrfToken extends BaseVerifier
         '/user/leader/signup/select',
         '/user/leader/signup/confirm',
         '/user/leader/signup/selectAll',
-        '/createAdmin'
+        '/createAdmin',
+        '/kindergarten/show/getPhotos'
     ];
 }

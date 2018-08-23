@@ -28,7 +28,7 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'admin', 'as' => 'admin.'], 
 });
 
 
-Route::post('/kindergarten/show/getPhotos',['uses' => 'SmallApp\Request\KindergartenGetShowPhotos@getPhotos']);
+Route::post('/kindergarten/show/getPhotos',['uses' => 'SmallApp\Request\KindergartenGetShowPhoto@getPhotos']);
 
 
 //小程序所有用户的初始动作

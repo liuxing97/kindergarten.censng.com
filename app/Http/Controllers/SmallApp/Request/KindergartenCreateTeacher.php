@@ -56,18 +56,46 @@ class KindergartenCreateTeacher extends Controller
 
     public function bindWechatApply(Request $request){
         //        dump($request ->session() ->all());
-        $appid = $request -> session() -> get('appid');
+        $appid = $request -> session() -> get('kindergarten');
+//        dump($appid);
         $wechat = $request -> session() -> get('openid');
+//        dump($wechat);
         $classId = $request -> input('classId');
         //判断是否已经存在过未处理的申请，或已成功的申请。
         $isApplyObj = new ControlAuthorityApply();
-        $isApplyObj = $isApplyObj -> where('wechat',$wechat) -> where('action',NULL) -> orWhere('action','true') -> first();
-        if($isApplyObj){
+        $isApplyObjRes = $isApplyObj -> where('wechat',$wechat) -> where('action',NULL) -> orderBy('id', 'desc') -> first();
+        if($isApplyObjRes){
             $data = [
                 'msg' => 'has apply',
                 'time' => date('Y-m-d H:i:s'),
             ];
             return $data;
+        }
+        $isApplyObjRes = $isApplyObj -> where('wechat',$wechat) -> where('action','true') -> orderBy('id', 'desc') -> first();
+        if($isApplyObjRes){
+            $data = [
+                'msg' => 'apply handle is success',
+                'time' => date('Y-m-d H:i:s'),
+            ];
+            return $data;
+        }
+        $isApplyObjRes = $isApplyObj -> where('wechat',$wechat) -> where('action','false') -> orderBy('id', 'desc') -> first();
+        if($isApplyObjRes){
+            $createdAt = $isApplyObjRes -> created_at;
+//            dump($createdAt);
+            $createdAt = strtotime($createdAt);
+            $createdAt = $createdAt + 30*60;
+//            dump(date('Y-m-d H:i:s', time()));
+//            dump(date('Y-m-d H:i:s',$createdAt));
+            //判断是否创建时间已超过30分钟
+            if(time() > $createdAt){
+            }else{
+                $data = [
+                    'msg' => 'apply handle is false',
+                    'time' => date('Y-m-d H:i:s'),
+                ];
+                return $data;
+            }
         }
         $applytype = 'teacher';
         $tableObj = new ControlAuthorityApply();
@@ -92,7 +120,7 @@ class KindergartenCreateTeacher extends Controller
     }
 
     public function getWaitingList(Request $request){
-        $appid = $request -> session() -> get('appid');
+        $appid = $request -> session() -> get('kindergarten');
         //查询
         $applyListObj = new ControlAuthorityApply();
         $applyListObj = $applyListObj -> where('kindergarten',$appid) -> where('action',NULL) -> where('applytype', 'teacher') ->get();

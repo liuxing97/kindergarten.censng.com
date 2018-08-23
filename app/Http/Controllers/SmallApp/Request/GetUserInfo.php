@@ -30,10 +30,10 @@ class GetUserInfo
 //        dump($wechat);
         //查询控制表中是否存在记录
         $ctrlObj = new SmallappControl();
-        $ctrlObj = $ctrlObj -> where('wechat',$wechat) -> where('kindergarten',$appKindergarten) -> first();
-//        dump($wechat);
-//        dump($appKindergarten);
-//        dump($ctrlObj);
+        $ctrlObj = $ctrlObj
+            -> where('wechat',$wechat)
+            -> where('kindergarten',$appKindergarten)
+            -> first();
         if($ctrlObj){
             $ctrlData = $ctrlObj -> toArray();
             //缓存用户对象

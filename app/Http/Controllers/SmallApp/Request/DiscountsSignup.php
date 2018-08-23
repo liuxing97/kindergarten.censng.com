@@ -257,7 +257,11 @@ class DiscountsSignup extends Controller
         }
         //根据驱动选择背景图片地址
         if($type == 'def') {
-            $bgPath = './discounts/source/bg1.jpg';
+            if($kindergarten == '80000001'){
+                $bgPath = './discounts/source/80000001.jpg';
+            }else{
+                $bgPath = './discounts/source/bg1.jpg';
+            }
         }else{
             $bgPath = '';
         }
@@ -290,7 +294,6 @@ class DiscountsSignup extends Controller
         if($creatDrive == 'no discount'){
             $filename=md5($wechat).".jpg";///要生成的图片名字 md5(appid).jpg
         }else{
-
             $filename=md5($wechat.$discountId).".jpg";///要生成的图片名字 md5(appid).jpg
         }
 

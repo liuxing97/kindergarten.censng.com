@@ -21,16 +21,19 @@ class KindergartenGetShowPhoto extends Controller
 
         for ($t=1; $t<10; $t++){
             $huanjingPath = $huanjingFolderPath.$kindergarten.'-'.$t.".jpg";
+            $huanjingSrc = "https://kindergarten.censng.com/showImages/huanjing/".$kindergarten.'-'.$t.".jpg";
             if(file_exists($huanjingPath)){
-                array_push($huanjingPhotos,$huanjingPath);
+                array_push($huanjingPhotos,$huanjingSrc);
             }
             $ketangPath = $ketangFolderPath.$kindergarten.'-'.$t.".jpg";
+            $ketangSrc = "https://kindergarten.censng.com/showImages/ketang/".$kindergarten.'-'.$t.".jpg";
             if(file_exists($ketangPath)){
-                array_push($ketangPhotos,$ketangPath);
+                array_push($ketangPhotos,$ketangSrc);
             }
             $huodongPath = $huodongFolderPath.$kindergarten.'-'.$t.".jpg";
+            $huodongSrc = "https://kindergarten.censng.com/showImages/huodong/".$kindergarten.'-'.$t.".jpg";
             if(file_exists($huodongPath)){
-                array_push($huodongPhotos,$huodongPath);
+                array_push($huodongPhotos,$huodongSrc);
             }
         }
 
